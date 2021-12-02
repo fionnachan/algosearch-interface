@@ -1,33 +1,25 @@
-import React from 'react';
+import React, { useState } from 'react';
 import ReactTooltip from "react-tooltip";
 
-export default class CopyAddress extends React.Component {
-	constructor(props) {
-		super(props);
-		
-		this.state = {
-			copied: false,
-		};
-	}
+const CopyAddress = (props) => {
+	const [copied, setCopied] = useState(false);
 
-	copyAddress = () => {
-		navigator.clipboard.writeText(this.props.address);
-		this.setState({copied: true}, () => {
-			setTimeout(() => {
-				this.setState({copied: false})
-			}, 1000);
-		})
+	const copyAddress = () => {
+		navigator.clipboard.writeText(props.address);
+		setCopied(true);
+		setTimeout(() => {
+			setCopied(false);
+		}, 1000);
 	};
 
-	render() {
-		return (
-			this.props.address !== '' ? (
-				<>
+	return (
+		props.address !== '' ? (
+			<>
 				<ReactTooltip id='copy' className='copy-style' place="top" type="dark" effect="solid">
-					<span>{this.state.copied ? 'Address copied' : '    Copy Address    '}</span>
+					<span>{copied ? 'Address copied' : '    Copy Address    '}</span>
 				</ReactTooltip>
-				<button className="address-button" onClick={this.copyAddress} data-tip data-for='copy'>
-					{this.state.copied ? (
+				<button className="address-button" onClick={copyAddress} data-tip data-for='copy'>
+					{copied ? (
 						<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 30 22.633">
 							<path d="M53.639,80.177,36.73,97.086l-6.213-6.213a.771.771,0,0,0-1.091,0l-1.818,1.818a.771.771,0,0,0,0,1.091l8.576,8.576a.771.771,0,0,0,1.091,0L56.548,83.086a.771.771,0,0,0,0-1.091L54.73,80.177A.771.771,0,0,0,53.639,80.177Z" transform="translate(-27.382 -79.951)" fill="#536d93"/>
 						</svg>
@@ -37,8 +29,9 @@ export default class CopyAddress extends React.Component {
 						</svg>
 					)}
 				</button>
-				</>
-			) : null
-		);
-	}
+			</>
+		) : null
+	);
 }
+
+export default CopyAddress;

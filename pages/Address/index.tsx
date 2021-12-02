@@ -1,6 +1,8 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import moment from 'moment';
+import { useRouter } from 'next/router';
+import Link from 'next/link';
 import Layout from '../../components/layout';
 import {formatValue, siteName} from '../../utils/constants';
 import Load from '../../components/tableloading';
@@ -10,110 +12,103 @@ import ReactTable from 'react-table-6';
 import 'react-table-6/react-table.css';
 import styles from './Address.module.css';
 
-class Address extends React.Component {
-	constructor(props) {
-		super(props);
+const Address = (props) => {
+	const router = useRouter();
+	const { _address } = router.query;
+	const [address, setAddress] = useState("");
+	const [data, setData] = useState([]);
+	const [loading, setLoading] = useState(true);
 
-		this.state = {
-			address: 0,
-			data: [],
-			loading: true
-		}
-	}
-
-	getAddressData = address => {
+	const getAddressData = address => {
 		axios({
 			method: 'get',
 			url: `${siteName}/addressservice/${address}`
 		}).then(response => {
-			this.setState({data: response.data, loading: false});
+			setData(response.data);
+			setLoading(false);
 		}).catch(error => {
 			console.log("Exception when querying for address information: " + error);
 		});
 	};
 
-	componentDidMount() {
-		const { address } = this.props.match.params;
-		this.setState({address: address});
+	useEffect(() => {
+		setAddress(_address.toString());
 		document.title=`AlgoSearch | Address ${address}`;
-		this.getAddressData(address);
-	}
+		getAddressData(address);
+	}, []);
 
-	render() {
-		console.log(this.state.data);
-		const columns = [
-			{Header: '#', accessor: 'confirmed-round', Cell: props => <span className="rownumber">{props.index + 1}</span>},
-			{Header: 'Round', accessor: 'confirmed-round', Cell: props => <NavLink to={`/block/${props.value}`}>{props.value}</NavLink>},
-			{Header: 'TX ID', accessor: 'id', Cell: props => <NavLink to={`/tx/${props.value}`}>{props.value}</NavLink>},
-			{Header: 'From', accessor: 'sender', Cell: props => this.state.address === props.value ? <span className="nocolor">{props.value}</span> : <NavLink to={`/address/${props.value}`}>{props.value}</NavLink>},
-			{Header: '', accessor: 'from', Cell: props => this.state.address === props.value ? <span className="type noselect">OUT</span> : <span className="type type-width-in noselect">IN</span>},
-			{Header: 'To', accessor: 'payment-transaction.receiver', Cell: props => this.state.address === props.value ? <span className="nocolor">{props.value}</span> : <NavLink to={`/address/${props.value}`}>{props.value}</NavLink>},
-			{Header: 'Amount', accessor: 'payment-transaction.amount', Cell: props => <span>{formatValue(props.value / 1000000)} <AlgoIcon /></span>},
-			{Header: 'Time', accessor: 'timestamp', Cell: props=> <span className="nocolor">{moment.unix(props.value).fromNow()}</span>}
-		];
+	const columns = [
+		{Header: '#', accessor: 'confirmed-round', Cell: props => <span className="rownumber">{props.index + 1}</span>},
+		{Header: 'Round', accessor: 'confirmed-round', Cell: props => <Link href={`/block/${props.value}`}>{props.value}</Link>},
+		{Header: 'TX ID', accessor: 'id', Cell: props => <Link href={`/tx/${props.value}`}>{props.value}</Link>},
+		{Header: 'From', accessor: 'sender', Cell: props => address === props.value ? <span className="nocolor">{props.value}</span> : <Link href={`/address/${props.value}`}>{props.value}</Link>},
+		{Header: '', accessor: 'from', Cell: props => address === props.value ? <span className="type noselect">OUT</span> : <span className="type type-width-in noselect">IN</span>},
+		{Header: 'To', accessor: 'payment-transaction.receiver', Cell: props => address === props.value ? <span className="nocolor">{props.value}</span> : <Link href={`/address/${props.value}`}>{props.value}</Link>},
+		{Header: 'Amount', accessor: 'payment-transaction.amount', Cell: props => <span>{formatValue(props.value / 1000000)} <AlgoIcon /></span>},
+		{Header: 'Time', accessor: 'timestamp', Cell: props=> <span className="nocolor">{moment.unix(props.value).fromNow()}</span>}
+	];
 
-		return (
-			<Layout data={{
-				"address": this.state.address,
-				// "balance": formatValue(this.state.data.amount / 1000000)
-				"balance": formatValue(this.state.data['amount-without-pending-rewards'] / 1000000)
-			}}
-			addresspage>
-				<div className="cardcontainer address-cards">
-					<Statscard
-						stat="Round last seen"
-						value={this.state.loading
-							? <Load />
-							: (this.state.data.confirmed_transactions.length > 0
-								? formatValue(this.state.data.confirmed_transactions[0]['confirmed-round'])
-								: '-'
-							)}
-					/>
-					<Statscard
-						stat="Rewards"
-						value={this.state.loading ? <Load /> : (
-							<div>
-								{formatValue(this.state.data.rewards / 1000000)}
-								<AlgoIcon />
-							</div>
+	return (
+		<Layout data={{
+			"address": address,
+			// "balance": formatValue(data.amount / 1000000)
+			"balance": formatValue(data['amount-without-pending-rewards'] / 1000000)
+		}}
+		addresspage>
+			<div className="cardcontainer address-cards">
+				<Statscard
+					stat="Round last seen"
+					value={loading
+						? <Load />
+						: (data.confirmed_transactions.length > 0
+							? formatValue(data.confirmed_transactions[0]['confirmed-round'])
+							: '-'
 						)}
-					/>
-					<Statscard
-						stat="Pending rewards"
-						value={this.state.loading ? <Load /> : (
-							<div>
-								{formatValue(this.state.data['pending-rewards'] / 1000000)}
-								<AlgoIcon />
-							</div>
-						)}
-					/>
-					<Statscard
-						stat="Status"
-						value={this.state.loading ? <Load /> : (
-							<div>
-								<div className={`status-light ${this.state.data.status === "Offline" ? "status-offline" : "status-online"}`}></div>
-								<span>{this.state.data.status}</span>
-							</div>
-						)}
+				/>
+				<Statscard
+					stat="Rewards"
+					value={loading ? <Load /> : (
+						<div>
+							{formatValue(data.rewards / 1000000)}
+							<AlgoIcon />
+						</div>
+					)}
+				/>
+				<Statscard
+					stat="Pending rewards"
+					value={loading ? <Load /> : (
+						<div>
+							{formatValue(data['pending-rewards'] / 1000000)}
+							<AlgoIcon />
+						</div>
+					)}
+				/>
+				<Statscard
+					stat="Status"
+					value={loading ? <Load /> : (
+						<div>
+							<div className={`status-light ${data.status === "Offline" ? "status-offline" : "status-online"}`}></div>
+							<span>{data.status}</span>
+						</div>
+					)}
+				/>
+			</div>
+			<div className="block-table addresses-table">
+				<span>Latest {loading ? 0 : data.confirmed_transactions.length} transactions {loading !== true && data.confirmed_transactions.length > 24 ? <Link href={`/addresstx/${address}`} className="viewmore">View more</Link>: null }</span>
+				<div>
+					<ReactTable
+						data={data.confirmed_transactions}
+						columns={columns}
+						loading={loading}
+						defaultPageSize={25}
+						showPagination={false}
+						sortable={false}
+						className="transactions-table addresses-table-sizing"
 					/>
 				</div>
-				<div className="block-table addresses-table">
-					<span>Latest {this.state.loading ? 0 : this.state.data.confirmed_transactions.length} transactions {this.state.loading !== true && this.state.data.confirmed_transactions.length > 24 ? <NavLink to={`/addresstx/${this.state.address}`} className="viewmore">View more</NavLink>: null }</span>
-					<div>
-						<ReactTable
-							data={this.state.data.confirmed_transactions}
-							columns={columns}
-							loading={this.state.loading}
-							defaultPageSize={25}
-							showPagination={false}
-							sortable={false}
-							className="transactions-table addresses-table-sizing"
-						/>
-					</div>
-				</div>
-			</Layout>
-		);
-	}
+			</div>
+		</Layout>
+	);
 }
 
 export default Address;

@@ -5,7 +5,7 @@ const Statscard = (props) => {
 	return (
 		<div className={styles.statscard}>
 			<h2>{props.stat}</h2>
-			<span>{props.value}</span>
+			{props.value}
 		</div>
 	);
 }

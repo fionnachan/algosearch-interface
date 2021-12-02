@@ -78,21 +78,3 @@
 	opacity: 0;
 	visibility: hidden;
 }
-
-@media screen and (min-width: 1300px) {
-	.sizer {
-		width: 1200px;
-	}
-}
-
-@media screen and (min-width: 600px) and (max-width: 1300px) {
-	.sizer {
-		width: 90vw;
-	}
-}
-
-@media screen and (max-width: 600px) {
-	.sizer {
-		width: 95vw;
-	}
-}

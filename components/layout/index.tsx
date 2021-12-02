@@ -6,8 +6,8 @@ import AddressHeader from '../addressheader';
 import HeaderSearch from '../headersearch';
 import MainHeader from '../mainheader';
 import Footer from '../footer';
-import HomeHeader from '../homeheader';
-import HomeFooter from '../homefooter';
+import HomeHeader from './HomeHeader';
+import HomeFooter from './HomeFooter';
 
 const Layout = (props) => {
 	const [scroll, setScroll] = useState(false);
@@ -42,12 +42,12 @@ const Layout = (props) => {
 	return (
 		<div className={styles.layout}>
 			<div className={styles.topheader}>
-				<div className={styles.sizer}>
+				<div className="sizer">
 					<HeaderSearch />
 				</div>
 			</div>
 			<div className={styles.bottomheader}>
-				<div className={styles.sizer}>
+				<div className="sizer">
 					<MainHeader />
 				</div>
 			</div>
@@ -58,19 +58,19 @@ const Layout = (props) => {
 				<HomeHeader synced={props.synced} genesisId={props.genesisId} />
 			) : null}
 			<div className={`${styles.content} ${props.homepage ? styles["content-shortened"] : ""}`}>
-				<div className={styles.sizer}>
+				<div className="sizer">
 					{props.children}
 				</div>
 			</div>
 			{props.homepage && (
 				<div className={styles.subfooter}>
-					<div className={styles.sizer}>
+					<div className="sizer">
 						<HomeFooter />
 					</div>
 				</div>
 			)}
 			<div className={styles.footer}>
-				<div className={styles.sizer}>
+				<div className="sizer">
 					<Footer />
 				</div>
 			</div>

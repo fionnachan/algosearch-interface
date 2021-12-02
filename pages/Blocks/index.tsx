@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import moment from 'moment';
 import Link from 'next/link';
@@ -12,45 +12,37 @@ import Load from '../../components/tableloading';
 import {siteName, formatValue} from '../../utils/constants';
 import styles from './Blocks.module.css';
 
-class Blocks extends React.Component {
-	constructor(props) {
-		super(props);
+const Blocks = (props) => {
 
-		this.state = {
-			blocks: [], // Blocks array
-			pageSize: 25, // Default pageSize = 25
-			pages: -1, // By default, pages to -1
-			loading: true, // Loading true
-		};
-	}
+	const [blocks, setBlocks] = useState([]);
+	const [pageSize, setPageSize] = useState(25);
+	const [pages, setPages] = useState(-1);
+	const [loading, setLoading] = useState(true);
 
 	// Update page size
-	updatePageSize = (pageIndex, pageSize) => {
-		this.setState({
-			pageSize: pageSize, // Set pageSize to new page size
-			pages: Math.ceil(this.state.current_round / pageSize) // Set pages to new number of pages
-		}, () => {
-			this.updateBlocks(pageIndex); // Run update to get new data based on update page size and current index
-		});
+	const updatePageSize = (pageIndex, pageSize) => {
+		setPageSize(pageSize);
+		setPages(Math.ceil(current_round / pageSize))
+		updateBlocks(pageIndex);
 	};
 
 	// Update blocks based on page number
-	updateBlocks = pageIndex => {
+	const updateBlocks = pageIndex => {
 		// Let the request headerblock be current_round - (current page * pageSize)
-		let headBlock = pageIndex * this.state.pageSize;
+		let headBlock = pageIndex * pageSize;
 
 		axios({
 			method: 'get',
-			url: `${siteName}/all/blocks/${headBlock + this.state.pageSize}/${this.state.pageSize}/0` // Use pageSize from state
+			url: `${siteName}/all/blocks/${headBlock + pageSize}/${pageSize}/0` // Use pageSize from state
 		}).then(response => {
-			this.setState({blocks: response.data}); // Set blocks to new data to render
+			setBlocks(response.data); // Set blocks to new data to render
 		}).catch(error => {
 			console.log("Exception when updating blocks: " + error);
 		})
 	};
 
 	// Get initial blocks on load
-	getBlocks = () => {
+	const getBlocks = () => {
 		// Call stats to get current round number
 		axios({
 			method: 'get',
@@ -61,11 +53,11 @@ class Blocks extends React.Component {
 				method: 'get',
 				url: `${siteName}/all/blocks/25/25/0`,
 			}).then(response => {
+				setBlocks(response.data);
+				setLoading(false);
 				this.setState({
-					blocks: response.data, // Set blocks data
 					current_round: response.data[0].round, // Set current_round to highest round
 					pages: Math.ceil(response.data[0].round / 25), // Set pages to rounded up division
-					loading: false, // Set loading to false
 					reward_rate: resp.data.reward_rate,
 					avg_block_time: resp.data.avg_block_time
 				});
@@ -77,73 +69,71 @@ class Blocks extends React.Component {
 		})
 	};
 
-	componentDidMount() {
-		this.getBlocks(); // Get initial blocks on load
+	useEffect(() => {
+		getBlocks();
 		document.title="AlgoSearch | Blocks";
-	}
+	}, []);
 
-	render() {
-		// Table columns
-		const columns = [
-			{Header: 'Round', accessor: 'round', Cell: props => <Link href={`/block/${props.value}`}>{props.value}</Link>},
-			{Header: 'Transactions', accessor: 'transactions'},
-			{Header: 'Proposed by', accessor: 'proposer', Cell: props => <Link href={`/address/${props.value}`}>{props.value}</Link>},
-			{Header: 'Time', accessor: 'timestamp', Cell: props => <span>{moment.unix(props.value).fromNow()}</span>}
-		];
+	// Table columns
+	const columns = [
+		{Header: 'Round', accessor: 'round', Cell: props => <Link href={`/block/${props.value}`}>{props.value}</Link>},
+		{Header: 'Transactions', accessor: 'transactions'},
+		{Header: 'Proposed by', accessor: 'proposer', Cell: props => <Link href={`/address/${props.value}`}>{props.value}</Link>},
+		{Header: 'Time', accessor: 'timestamp', Cell: props => <span>{moment.unix(props.value).fromNow()}</span>}
+	];
 
-		return (
-			<Layout>
-				<Breadcrumbs
-					name="Blocks"
-					parentLink="/"
-					parentLinkName="Home"
-					currentLinkName="Blocks"
+	return (
+		<Layout>
+			<Breadcrumbs
+				name="Blocks"
+				parentLink="/"
+				parentLinkName="Home"
+				currentLinkName="Blocks"
+			/>
+			<div className="cardcontainer">
+				<Statscard
+					stat="Latest round"
+					value={loading ? <Load /> : formatValue(current_round)}
 				/>
-				<div className="cardcontainer">
-					<Statscard
-						stat="Latest round"
-						value={this.state.loading ? <Load /> : formatValue(this.state.current_round)}
-					/>
-					<Statscard
-						stat="Average Block Time"
-						value={this.state.loading ? <Load /> : (<span>{this.state.avg_block_time}s</span>)}
-					/>
-					<Statscard
-						stat="Reward Rate"
-						value={this.state.loading ? <Load /> : (
-							<div>
-								{this.state.reward_rate}
-								<AlgoIcon />
-							</div>
-						)}
+				<Statscard
+					stat="Average Block Time"
+					value={loading ? <Load /> : (<span>{avg_block_time}s</span>)}
+				/>
+				<Statscard
+					stat="Reward Rate"
+					value={loading ? <Load /> : (
+						<div>
+							{reward_rate}
+							<AlgoIcon />
+						</div>
+					)}
+				/>
+			</div>
+			<div className="table">
+				<div>
+					<p>{loading ? "Loading": formatValue(current_round)} blocks found</p>
+					<p>(Showing the last {pageSize} records)</p>
+				</div>
+				<div>
+					<ReactTable
+						pageIndex={0}
+						pages={pages}
+						data={blocks}
+						columns={columns}
+						loading={loading}
+						pageSize={pageSize}
+						defaultPageSize={25}
+						pageSizeOptions={[25, 50, 100]}
+						onPageChange={pageIndex => updateBlocks(pageIndex)}
+						onPageSizeChange={(pageSize, pageIndex) => updatePageSize(pageIndex, pageSize)}
+						sortable={false}
+						className="blocks-table"
+						manual
 					/>
 				</div>
-				<div className="table">
-					<div>
-						<p>{this.state.loading ? "Loading": formatValue(this.state.current_round)} blocks found</p>
-						<p>(Showing the last {this.state.pageSize} records)</p>
-					</div>
-					<div>
-						<ReactTable
-							pageIndex={0}
-							pages={this.state.pages}
-							data={this.state.blocks}
-							columns={columns}
-							loading={this.state.loading}
-							pageSize={this.state.pageSize}
-							defaultPageSize={25}
-							pageSizeOptions={[25, 50, 100]}
-							onPageChange={pageIndex => this.updateBlocks(pageIndex)}
-							onPageSizeChange={(pageSize, pageIndex) => this.updatePageSize(pageIndex, pageSize)}
-							sortable={false}
-							className="blocks-table"
-							manual
-						/>
-					</div>
-				</div>
-			</Layout>
-		);
-	}
+			</div>
+		</Layout>
+	);
 }
 
 export default Blocks;

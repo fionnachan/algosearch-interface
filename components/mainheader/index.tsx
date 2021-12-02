@@ -1,66 +1,62 @@
-import Link from 'next/link';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Image from "next/image";
+import Link from 'next/link';
 import styles from './MainHeader.module.css';
 
-class MainHeader extends React.Component {
-	constructor(props) {
-		super(props);
+const MainHeader = () => {
+	const [open, setOpen] = useState(false);
 
-		this.state = {
-			open: false,
-		}
-	}
-	updateDimensions = e => {
+	const updateDimensions = (event) => {
 		if (window.innerWidth > 950) {
-			this.setState({open: false});
+			setOpen(false);
 		}
 	}
-	componentDidMount() {
-		this.updateDimensions();
-		window.addEventListener('resize', this.updateDimensions.bind(this));
-	}
-	componentWillUnmount() {
-		window.removeEventListener('resize', this.updateDimensions.bind(this));
-	}
-	render() {
-		return (
-			<div className={styles.mainheader}>
-				<div className={styles.logo}>
-					<Link href="/">
-						<Image src="/algo.svg" width={14} height={14} alt="AlgoSearch logo" />
-					</Link>
-				</div>
-				<div className={styles.menu}>
-					<nav>
-						<ul>
-							<li><Link href="/">Home</Link></li>
-							<li><Link href="/blocks">Blocks</Link></li>
-							<li><Link href="/transactions">Transactions</Link></li>
-							<li><Link href="/dev">Developer APIs</Link></li>
-						</ul>
-					</nav>
-					<div className={styles.hamburger}>
-						<span
-							onClick={() => this.setState(previous => ({open: !previous.open}))}
-						>
-							Hamburger Button
-						</span>
-					</div>
-				</div>
-				<div className={`${styles["menu-mobile"]} ${this.state.open ? "shown" : "hidden"}`}>
-					<nav>
-						<ul>
-							<li><Link href="/">Home</Link></li>
-							<li><Link href="/blocks">Blocks</Link></li>
-							<li><Link href="/transactions">Transactions</Link></li>
-							<li><Link href="/dev">Developer APIs</Link></li>
-						</ul>
-					</nav>
+
+	useEffect(() => {
+		window.addEventListener('resize', updateDimensions);
+
+		// returned function will be called on component unmount 
+		return () => {
+		  window.removeEventListener('resize', updateDimensions)
+		}
+	}, []);
+
+	return (
+		<div className={styles.mainheader}>
+			<div className={styles.logo}>
+				<Link href="/">
+					<Image src="/algo.svg" width={14} height={14} alt="AlgoSearch logo" />
+				</Link>
+			</div>
+			<div className={styles.menu}>
+				<nav>
+					<ul>
+						<li><Link href="/">Home</Link></li>
+						<li><Link href="/blocks">Blocks</Link></li>
+						<li><Link href="/transactions">Transactions</Link></li>
+						<li><Link href="/dev">Developer APIs</Link></li>
+					</ul>
+				</nav>
+				<div className={styles.hamburger}>
+					<span
+						onClick={() => setOpen(!open)}
+					>
+						Hamburger Button
+					</span>
 				</div>
 			</div>
-		);
-	}
+			<div className={`${styles["menu-mobile"]} ${open ? styles.shown : styles.hidden}`}>
+				<nav>
+					<ul>
+						<li><Link href="/">Home</Link></li>
+						<li><Link href="/blocks">Blocks</Link></li>
+						<li><Link href="/transactions">Transactions</Link></li>
+						<li><Link href="/dev">Developer APIs</Link></li>
+					</ul>
+				</nav>
+			</div>
+		</div>
+	);
 }
 
 export default MainHeader;

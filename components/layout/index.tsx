@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import moment from 'moment';
 import styles from './Layout.module.css';
 
@@ -9,12 +9,10 @@ import Footer from '../footer';
 import HomeHeader from '../homeheader';
 import HomeFooter from '../homefooter';
 
-class Layout extends React.Component {
-	state = {
-		scroll: false
-	};
+const Layout = (props) => {
+	const [scroll, setScroll] = useState(false);
 
-	componentDidMount() {
+	useEffect(() => {
 		// Moment global setup
 		moment.updateLocale('en', {
 			relativeTime: {
@@ -22,68 +20,63 @@ class Layout extends React.Component {
 			}
 		});
 		// Check for scroll to top button position
-		window.addEventListener('scroll', this.renderScrollTop.bind(this));
-	}
+		window.addEventListener('scroll', renderScrollTop);
+
+	}, []);
+
 
 	// Scroll to top button — render behaviour
-	renderScrollTop() {
+	const renderScrollTop = () => {
 		let scroll_position = window.pageYOffset;
-
-		if (!this.state.scroll && scroll_position > 500) {
-			this.setState({scroll: true});
-		} else if (this.state.scroll && scroll_position <= 500) {
-			this.setState({scroll: false});
-		}
+		setScroll(!scroll && scroll_position > 500);
 	}
 
 	// Scroll to top button — scroll up behaviour
-	scrollToTop() {
+	const scrollToTop = () => {
 		window.scrollTo({
 			top: 0,
 			behavior: "smooth"
 		});
 	}
 
-	render() {
-		return (
-			<div className={styles.layout}>
-				<div className={styles.topheader}>
-					<div className={styles.sizer}>
-						<HeaderSearch />
-					</div>
+	return (
+		<div className={styles.layout}>
+			<div className={styles.topheader}>
+				<div className={styles.sizer}>
+					<HeaderSearch />
 				</div>
-				<div className={styles.bottomheader}>
-					<div className={styles.sizer}>
-						<MainHeader />
-					</div>
-				</div>
-				{this.props.addresspage ? (
-					<AddressHeader data={this.props.data} />
-				) : null}
-				{this.props.homepage ? (
-					<HomeHeader synced={this.props.synced} genesisId={this.props.genesisId} />
-				) : null}
-				<div className={`${styles.content} ${this.props.homepage ? styles["content-shortened"] : ""}`}>
-					<div className={styles.sizer}>
-						{this.props.children}
-					</div>
-				</div>
-				{this.props.homepage ? (
-					<div className={styles.subfooter}>
-						<div className={styles.sizer}>
-							<HomeFooter />
-						</div>
-					</div>
-				) : null }
-				<div className={styles.footer}>
-					<div className={styles.sizer}>
-						<Footer />
-					</div>
-				</div>
-				<button className={`${styles.scrolltop} ${this.state.scroll ? '' : styles.hiddenscroll}`} onClick={this.scrollToTop}>➜</button>
 			</div>
-		);
-	}
+			<div className={styles.bottomheader}>
+				<div className={styles.sizer}>
+					<MainHeader />
+				</div>
+			</div>
+			{props.addresspage ? (
+				<AddressHeader data={props.data} />
+			) : null}
+			{props.homepage ? (
+				<HomeHeader synced={props.synced} genesisId={props.genesisId} />
+			) : null}
+			<div className={`${styles.content} ${props.homepage ? styles["content-shortened"] : ""}`}>
+				<div className={styles.sizer}>
+					{props.children}
+				</div>
+			</div>
+			{props.homepage && (
+				<div className={styles.subfooter}>
+					<div className={styles.sizer}>
+						<HomeFooter />
+					</div>
+				</div>
+			)}
+			<div className={styles.footer}>
+				<div className={styles.sizer}>
+					<Footer />
+				</div>
+			</div>
+			<button className={`${styles.scrolltop} ${scroll ? '' : styles.hiddenscroll}`} onClick={scrollToTop}>➜</button>
+		</div>
+	);
 }
 
 export default Layout;

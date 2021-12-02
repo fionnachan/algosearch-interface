@@ -43,7 +43,7 @@ class HeaderSearch extends React.Component {
 					</svg>
 					<input type="search" aria-label="Search by Address, Transaction ID, or Block" onChange={e => this.setState({query: e.target.value})} onKeyDown={e => e.key === 'Enter' ? this.search(): null} placeholder="Search by Address / TX ID / Block"/>
 				</div>
-				<div className="poweredlogo noselect">
+				<div className={styles.poweredlogo + " noselect"}>
 					<p>Powered by{" "}
 						<a href="https://www.algorand.com/" target="_blank" rel="noopener noreferrer">
 							<Image src="/algo.svg" width={14} height={14} alt="Algorand logo"/>

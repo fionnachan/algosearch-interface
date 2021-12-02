@@ -1,12 +1,10 @@
 import React from 'react';
-import styles from './TableLoading.module.css';
+import styles from './TableLoading.module.scss';
 
-export default class Load extends React.Component {
-	render() {
-		return (
-			<>
-				TODO:create a loader
-			</>
-		);
-	}
+const Load = () => {
+	return (
+		<div className={styles.loader}><span></span></div>
+	);
 }
+
+export default Load;

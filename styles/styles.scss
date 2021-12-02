@@ -1,3 +1,36 @@
+:root {
+    --blue-darkest: #071376;
+    --blue-darker: #072396;
+    --blue-dark: #0733b6;
+    --blue: #0763d6;
+    --blue-light: #3c90f7;
+    --blue-lighter: #6cc0f7;
+    --blue-lightest: #e4f3ff;
+    --grey-darkest: #333333;
+    --grey-darker: #666666;
+    --grey-dark: #888888;
+    --grey: #aaaaaa;
+    --grey-light: #cccccc;
+    --grey-lighter: #dddddd;
+    --grey-lightest: #efefef;
+    --font-size-xxl: 1.5rem;
+    --font-size-xl: 1.25rem;
+    --font-size-l: 1.125rem;
+    --font-size-m: 1rem;
+    --font-size-s: 0.875rem;
+    --font-size-xs: 0.75rem;
+    --space-xxxxl: 4rem;
+    --space-xxxl: 2rem;
+    --space-xxl: 1.5rem;
+    --space-xl: 1.25rem;
+    --space-l: 1rem;
+    --space-m: 0.75rem;
+    --space-s: 0.5715rem;
+    --space-xs: 0.375rem;
+    --space-xxs: 0.25rem;
+    --space-xxxs: 0.125rem;
+}
+
 html,
 body {
     padding: 0;

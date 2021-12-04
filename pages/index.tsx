@@ -13,6 +13,7 @@ import HomeSearch from '../components/homesearch';
 import styles from './Home.module.css';
 import { getAlgodClient, getAlgodv1Client } from '../utils/algorand';
 import algosdk from 'algosdk';
+import { removeSpace } from '../utils/stringUtils';
 
 const Home = (props) => {
 	const [blocks, setBlocks] = useState([]);
@@ -33,15 +34,28 @@ const Home = (props) => {
 			url: `${siteName}/v1/algod/current-round`
 		}).then(response => {
 		    if (response.data) {
+				console.log("algod current round: ",response.data)
 				const genesisId = response.data['genesis-id'];
-				setBlocks(response.data.blocks)
 				setCurrentRound(response.data.round);
 				setTransactions(response.data.transactions)
 				setLoading(false);
 				setGenesisId(genesisId);
+
+				let pageNum = Math.floor(response.data.round/25);
+
+				axios({
+					method: 'get',
+					url: `${siteName}/v1/rounds?latest_blk=${response.data.round}&page=1&limit=25&order=desc`,
+				}).then(resp => {
+					console.log("blocks: ", resp.data)
+					setBlocks(resp.data.items);
+					setLoading(false);
+				}).catch(error => {
+					console.log("Exception when retrieving last 25 blocks: " + error);
+				})
 			}
 		}).catch(error => {
-			console.log("Error when retrieving latest statistics: " + error);
+			console.error("Error when retrieving latest statistics: " + error);
 		})
 		// setTimeout(this.getLatest, 1000);
 	};
@@ -54,7 +68,7 @@ const Home = (props) => {
 			setPrice(response.data.algorand.usd);
 			setLoading(false);
 		}).catch(error => {
-			console.log("Error when retrieving Algorand price from CoinGecko: " + error);
+			console.error("Error when retrieving Algorand price from CoinGecko: " + error);
 		})
 	}
 
@@ -66,7 +80,7 @@ const Home = (props) => {
 				setLedger(results);
 			})
 			.catch(error => {
-				console.log("Error when retrieving ledger supply from Algod: " + error);
+				console.error("Error when retrieving ledger supply from Algod: " + error);
 			});
 
 		getPrice();
@@ -74,7 +88,12 @@ const Home = (props) => {
 	}, []);
 	
 	const block_columns = [
-		{Header: 'Round', accessor: 'round', Cell: props => <Link href={`/block/${props.value}`}>{props.value}</Link>},
+		{Header: 'Round', accessor: 'round', Cell: ({value}) => {
+			const _value = value.toString().replace(" ", "");
+			return (
+				<Link href={`/block/${_value}`}>{_value}</Link>
+			)
+		}},
 		{Header: 'Proposer', accessor: 'proposer',  Cell: props => <Link href={`/address/${props.value}`}>{props.value}</Link>},
 		{Header: '# TX', accessor: 'numtxn', Cell: props => <span className="nocolor">{props.value}</span>},
 		{Header: 'Time', accessor: 'timestamp', Cell: props => <span className="nocolor">{moment.unix(props.value).fromNow()}</span>}
@@ -86,7 +105,7 @@ const Home = (props) => {
 		{Header: 'From', accessor: 'sender',  Cell: props => <Link href={`/address/${props.value}`}>{props.value}</Link>},
 		{Header: 'To', accessor: 'payment-transaction.receiver',  Cell: props => <Link href={`/address/${props.value}`}>{props.value}</Link>},
 		{Header: 'Amount', accessor: 'payment-transaction.amount', Cell: props => <span>{<span className="nocolor">{formatValue(props.value / 1000000)}</span>} <AlgoIcon /></span>},
-		{Header: 'Time', accessor: 'timestamp', Cell: props => <span className="nocolor">{moment.unix(props.value).fromNow()}</span>}
+		{Header: 'Time', accessor: 'round-time', Cell: props => <span className="nocolor">{moment.unix(props.value).fromNow()}</span>}
 	];
 	const transaction_columns_id = {id: "home-latest-transaction-sizing"};
 

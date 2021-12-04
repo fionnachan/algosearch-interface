@@ -12,7 +12,7 @@ import AlgoIcon from '../../components/algoicon';
 import Load from '../../components/tableloading';
 import {siteName, formatValue} from '../../utils/constants';
 import styles from './Blocks.module.css';
-import statscardStyles from '../../components/statscard/Statscard.module.css';
+import statscardStyles from '../../components/statscard/Statscard.module.scss';
 import algosdk from 'algosdk';
 
 const Table = ({ columns, data }) => {
@@ -27,26 +27,29 @@ const Table = ({ columns, data }) => {
 	  columns,
 	  data,
 	})
-  
+
 	// Render the UI for your table
 	return (
 	  <table {...getTableProps()}>
 		<thead>
 		  {headerGroups.map(headerGroup => (
 			<tr {...headerGroup.getHeaderGroupProps()}>
-			  {headerGroup.headers.map(column => (
+			  {headerGroup.headers.map(column => {
+				  
+				  console.log("column: ",column)
+				  return (
 				<th {...column.getHeaderProps()}>{column.render('Header')}</th>
-			  ))}
+			  )})}
 			</tr>
 		  ))}
 		</thead>
 		<tbody {...getTableBodyProps()}>
 		  {rows.map((row, i) => {
 			prepareRow(row)
-			console.log("Cells: ",row.cells)
 			return (
 			  <tr {...row.getRowProps()}>
 				{row.cells.map(cell => {
+					// {cell.render('Cell')}
 				  return <td {...cell.getCellProps()}>{cell.render('Cell')}</td>
 				})}
 			  </tr>
@@ -105,9 +108,9 @@ const Blocks = (props) => {
 				method: 'get',
 				url: `${siteName}/v1/rounds?latest_blk=${resp.data.round}&limit=25&page=1&order=desc`,
 			}).then(response => {
-				console.log("rounds: ", response.data)
+				console.log("block rounds: ", response.data)
 				setBlocks(response.data.items);
-				setPages(Math.ceil(resp.data.round / 25));
+				setPages(resp.data.num_of_pages);
 				setLoading(false);
 			}).catch(error => {
 				console.log("Exception when retrieving last 25 blocks: " + error);
@@ -122,12 +125,6 @@ const Blocks = (props) => {
 		document.title="AlgoSearch | Blocks";
 	}, []);
 
-	// Table columns
-	// const columns = [
-	// 	{Header: 'Round', accessor: 'round', Cell: props => <Link href={`/block/${props.value}`}>{props.value}</Link>},
-	// 	{Header: 'Transactions', accessor: 'transactions'},
-	// ];
-
 	const columns = React.useMemo(
 		() => [
 			{
@@ -139,10 +136,6 @@ const Blocks = (props) => {
 						<Link href={`/block/${_value}`}>{_value}</Link>
 					)
 				}
-			},
-			{
-				Header: 'Transactions',
-				accessor: 'transactions',
 			},
 			{
 				Header: 'Proposed by',

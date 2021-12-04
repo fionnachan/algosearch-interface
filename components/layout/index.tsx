@@ -69,10 +69,8 @@ const Layout = (props) => {
 					</div>
 				</div>
 			)}
-			<div className={styles.footer}>
-				<div className="sizer">
-					<Footer />
-				</div>
+			<div>
+				<Footer />
 			</div>
 			<button className={`${styles.scrolltop} ${scroll ? '' : styles.hiddenscroll}`} onClick={scrollToTop}>➜</button>
 		</div>

@@ -27,7 +27,7 @@ const Address = (props) => {
 			setData(response.data);
 			setLoading(false);
 		}).catch(error => {
-			console.log("Exception when querying for address information: " + error);
+			console.error("Exception when querying for address information: " + error);
 		});
 	};
 

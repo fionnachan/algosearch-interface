@@ -29,7 +29,7 @@ const Block = () => {
 			setTransactions(response.data.transactions);
 			setLoading(false);
 		}).catch(error => {
-			console.log(`Exception when retrieving block #${blockNum}: ${error}`)
+			console.error(`Exception when retrieving block #${blockNum}: ${error}`)
 		})
 	}
 

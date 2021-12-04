@@ -1,5 +1,5 @@
 import React from 'react';
-import styles from './Statscard.module.css';
+import styles from './Statscard.module.scss';
 
 const Statscard = (props) => {
 	return (

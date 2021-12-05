@@ -3,14 +3,13 @@ import Image from 'next/image';
 import { algodurl } from '../../utils/constants';
 import styles from './HomeHeader.module.css';
 
-const HomeHeader = (props) => {
+const HomeHeader = () => {
 	return (
 		<div className={styles["home-search"]}>
 			<div className="sizer">
 				<div>
-					<h1><Image src="/algo.svg" width={14} height={14} alt="Algorand logo"/>Block Explorer</h1>
-					<span>Open-source block explorer for the Algorand mainnet. Showing <a href={algodurl}>{props.genesisId}</a>
-					</span>
+					<h1>Algorand Block Explorer</h1>
+					<span>Open-source block explorer for Algorand</span>
 				</div>
 				<div>
 				</div>

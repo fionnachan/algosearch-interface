@@ -1,10 +1,9 @@
 import { Config } from "./config";
 
 const testnet_config: Config = {
-  "explorer":"algoexplorer.io",
   "algod":{
     "host": "https://testnet.algoexplorerapi.io",
-    "port":0,
+    "port": 0,
     "token":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
   },
   "indexer":{

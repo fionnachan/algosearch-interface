@@ -1,11 +1,23 @@
 .breadcrumbs {
+	display: flex;
+	align-items: center;
 	border-bottom: 1px solid #e7eaf3;
 	padding: 2px 0px;
 	margin-bottom: 24px;
+
+	a {
+		text-decoration: none;
+		color: var(--blue-light);
+		transition: 50ms ease-in-out;
+	}
+	
+	a:hover {
+		color: var(--blue);
+	}
 }
 
-.breadcrumbs > div {
-	display: inline-block;
+.pageTitle {
+	flex: 1 0 auto;
 }
 
 .breadcrumbs > div > span {
@@ -21,37 +33,6 @@
 	overflow: hidden;
 	text-overflow: ellipsis;
 	max-width: calc(95vw - 10px);
-}
-
-.breadcrumbs > div:last-child {
-	float: right;
-	padding-top: 5px;
-}
-
-.breadcrumbs > div > h1 {
-	font-size: 22px;
-	color: rgb(30, 32, 34);
-}
-
-.breadcrumbs > div > p {
-	font-size: 15px;
-	color: rgb(1, 33, 55);
-	font-weight: 400;
-}
-
-.breadcrumbs > div > p > a {
-	text-decoration: none;
-	color: #337afe;
-	transition: 50ms ease-in-out;
-}
-
-.breadcrumbs > div > p > a:hover {
-	color: #0150e3 !important;
-}
-
-.breadcrumbs > div > p > span {
-	color: #97a4af;
-	font-weight: 500;
 }
 
 .breadcrumbs-address-tx > div > h1 {

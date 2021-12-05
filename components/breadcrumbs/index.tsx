@@ -1,12 +1,12 @@
 import Link from 'next/link';
 import React from 'react';
-import styles from "./Breadcrumbs.module.css";
+import styles from "./Breadcrumbs.module.scss";
 
 const Breadcrumbs = (props) => {
 	return (
 		<div className={`${styles.breadcrumbs} ${props.address && props.address !== '' ? styles["breadcrumbs-address-tx"] : null}`}>
-			<div>
-				<h1>{props.name}</h1>
+			<div className={styles.pageTitle}>
+				<h2>{props.name}</h2>
 				{props.address && props.address !== '' ? <span>{props.address}</span> : null}
 			</div>
 			<div>

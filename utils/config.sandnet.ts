@@ -1,7 +1,6 @@
 import { Config } from "./config";
 
 const sandnet_config: Config = {
-  "explorer":"algoexplorer.io",
   "algod":{
     "host": "http://localhost",
     "port":4001,

@@ -47,52 +47,6 @@
 	vertical-align: top;
 }
 
-.status-offline {
-	background-color: rgb(214, 2, 44);
-	box-shadow: 0 0 0 0 rgba(214, 2, 44, 1);
-	animation: pulsered 2s infinite;
-}
-
-.status-online {
-	background-color: rgb(0, 190, 0);
-	box-shadow: 0 0 0 0 rgba(0, 190, 0, 1);
-	animation: pulsegreen 2s infinite;
-}
-
-@keyframes pulsered {
-	0% {
-		transform: scale(0.95);
-		box-shadow: 0 0 0 0 rgba(214, 2, 44, 0.7);
-	}
-
-	70% {
-		transform: scale(1);
-		box-shadow: 0 0 0 5px rgba(214, 2, 44, 0);
-	}
-
-	100% {
-		transform: scale(0.95);
-		box-shadow: 0 0 0 0 rgba(214, 2, 44, 0);
-	}
-}
-
-@keyframes pulsegreen {
-	0% {
-		transform: scale(0.95);
-		box-shadow: 0 0 0 0 rgba(0, 190, 0, 0.7);
-	}
-
-	70% {
-		transform: scale(1);
-		box-shadow: 0 0 0 5px rgba(0, 190, 0, 0);
-	}
-
-	100% {
-		transform: scale(0.95);
-		box-shadow: 0 0 0 0 rgba(0, 190, 0, 0);
-	}
-}
-
 @media screen and (max-width: 600px) {
 	.address-cards {
 		flex-direction: column !important;

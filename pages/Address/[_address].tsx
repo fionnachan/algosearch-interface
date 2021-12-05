@@ -11,31 +11,36 @@ import AlgoIcon from '../../components/algoicon';
 import ReactTable from 'react-table-6';
 import 'react-table-6/react-table.css';
 import styles from './Address.module.css';
+import { getAlgodClient } from '../../utils/algorand';
 
 const Address = (props) => {
 	const router = useRouter();
 	const { _address } = router.query;
 	const [address, setAddress] = useState("");
-	const [data, setData] = useState([]);
+	const [data, setData] = useState({});
+	const [txData, setTxData] = useState({});
 	const [loading, setLoading] = useState(true);
+	const algod = getAlgodClient();
 
 	const getAddressData = address => {
-		axios({
-			method: 'get',
-			url: `${siteName}/addressservice/${address}`
-		}).then(response => {
-			setData(response.data);
-			setLoading(false);
-		}).catch(error => {
-			console.error("Exception when querying for address information: " + error);
-		});
+		algod.accountInformation(address)
+			.do()
+			.then(response => {
+				console.log("address: ",response)
+				setData(response);
+				setLoading(false);
+			})
+			.catch(error => {
+				console.error("Exception when querying for address information: " + error);
+			});
 	};
 
 	useEffect(() => {
+		console.log("_address: ",_address)
 		setAddress(_address.toString());
 		document.title=`AlgoSearch | Address ${address}`;
-		getAddressData(address);
-	}, []);
+		getAddressData(_address);
+	}, [router]);
 
 	const columns = [
 		{Header: '#', accessor: 'confirmed-round', Cell: props => <span className="rownumber">{props.index + 1}</span>},
@@ -51,20 +56,10 @@ const Address = (props) => {
 	return (
 		<Layout data={{
 			"address": address,
-			// "balance": formatValue(data.amount / 1000000)
 			"balance": formatValue(data['amount-without-pending-rewards'] / 1000000)
 		}}
 		addresspage>
 			<div className="cardcontainer address-cards">
-				<Statscard
-					stat="Round last seen"
-					value={loading
-						? <Load />
-						: (data.confirmed_transactions.length > 0
-							? formatValue(data.confirmed_transactions[0]['confirmed-round'])
-							: '-'
-						)}
-				/>
 				<Statscard
 					stat="Rewards"
 					value={loading ? <Load /> : (
@@ -94,7 +89,7 @@ const Address = (props) => {
 				/>
 			</div>
 			<div className="block-table addresses-table">
-				<span>Latest {loading ? 0 : data.confirmed_transactions.length} transactions {loading !== true && data.confirmed_transactions.length > 24 ? <Link href={`/addresstx/${address}`} className="viewmore">View more</Link>: null }</span>
+				<span>Latest {loading || !data.confirmed_transactions ? 0 : data.confirmed_transactions.length} transactions {loading !== true && data.confirmed_transactions && data.confirmed_transactions.length > 24 && <Link href={`/addresstx/${address}`}>View more</Link> }</span>
 				<div>
 					<ReactTable
 						data={data.confirmed_transactions}

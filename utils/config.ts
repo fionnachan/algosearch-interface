@@ -1,4 +1,4 @@
-import Configuration from "./config.sandnet";
+import Configuration from "./config.testnet";
 
 export interface ApiConf {
     host: string
@@ -7,7 +7,6 @@ export interface ApiConf {
 }
 
 export interface Config {
-    explorer: string
     algod:  ApiConf 
     indexer:  ApiConf
     network: string

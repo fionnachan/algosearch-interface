@@ -10,9 +10,11 @@ import AlgoIcon from '../components/algoicon';
 import Statscard from '../components/statscard';
 import Load from '../components/tableloading';
 import styles from './Home.module.css';
-import { getAlgodClient, getAlgodv1Client } from '../utils/algorand';
+import { getAlgodClient } from '../utils/algorand';
 import algosdk from 'algosdk';
 import { removeSpace } from '../utils/stringUtils';
+import { BigNumber } from 'bignumber.js';
+import Button from '@mui/material/Button';
 
 const Home = (props) => {
 	const [blocks, setBlocks] = useState([]);
@@ -21,11 +23,18 @@ const Home = (props) => {
 	const [genesisId, setGenesisId] = useState(0);
 	const [currentRound, setCurrentRound] = useState(0);
 	const [price, setPrice] = useState(0);
+	const [circulatingSupply, setCirculatingSupply] = useState("");
 	const [ledger, setLedger] = useState({});
 	const [synced, setSynced] = useState(false);
 
-	const algodv1 = getAlgodv1Client();
 	const algod = getAlgodClient();
+
+	BigNumber.config({ DECIMAL_PLACES: 2 });
+	const currencyFormatter = new Intl.NumberFormat('en-US', {
+		style: 'currency',
+		currency: 'USD',
+	});
+	const integerFormatter = new Intl.NumberFormat('en-US');
 
 	const getLatest = () => {
 		axios({
@@ -56,7 +65,6 @@ const Home = (props) => {
 		}).catch(error => {
 			console.error("Error when retrieving latest statistics: " + error);
 		})
-		// setTimeout(this.getLatest, 1000);
 	};
 
 	const getPrice = () => {
@@ -71,18 +79,36 @@ const Home = (props) => {
 		})
 	}
 
+	const getCirculatingSupply = () => {
+		axios({
+			method: 'get',
+			url: 'https://metricsapi.algorand.foundation/v1/supply/circulating?unit=algo'
+		}).then(response => {
+			const _circulatingSupply = currencyFormatter.format(response.data);
+			setCirculatingSupply(_circulatingSupply);
+			setLoading(false);
+		}).catch(error => {
+			console.error("Error when retrieving Algorand circulating suppy: " + error);
+		})
+	}
+
 	useEffect(() => {
 		document.title="AlgoSearch (ALGO) Blockchain Explorer";
-
-		algodv1.ledgerSupply()
+		algod.supply().do()
 			.then(results => {
-				setLedger(results);
+				const _results = {
+					"current_round": integerFormatter.format(results.current_round),
+					"online-money": currencyFormatter.format(new BigNumber(results["online-money"]).dividedBy(1e6).toNumber())
+				}
+				console.log("supply: ",_results)
+				setLedger(_results);
 			})
 			.catch(error => {
 				console.error("Error when retrieving ledger supply from Algod: " + error);
 			});
 
 		getPrice();
+		getCirculatingSupply();
 		getLatest();
 	}, []);
 	
@@ -113,13 +139,13 @@ const Home = (props) => {
 			<div className={"cardcontainer address-cards "+styles["home-cards"]}>
 				<Statscard
 					stat="Latest Round"
-					value={loading ? <Load /> : formatValue(currentRound)}
+					value={loading ? <Load /> : ledger['current_round']}
 				/>
 				<Statscard
 					stat="Online Stake"
 					value={loading ? <Load /> : (
 						<div>
-							{formatValue(ledger['onlineMoney'] / 1000000)}
+							{ledger['online-money']}
 							<AlgoIcon />
 						</div>
 					)}
@@ -128,7 +154,7 @@ const Home = (props) => {
 					stat="Circulating supply"
 					value={loading ? <Load /> : (
 						<div>
-							{formatValue(ledger['totalMoney'] / 1000000)}
+							{circulatingSupply}
 							<AlgoIcon />
 						</div>
 					)}
@@ -139,39 +165,37 @@ const Home = (props) => {
 				/>
 			</div>
 			<div className={styles["home-split"]}>
-				<div>
-					<div className="block-table addresses-table">
-						<span>Latest blocks <Link href="/blocks">View more</Link></span>
-						<div>
-							<ReactTable
-								data={blocks}
-								columns={block_columns}
-								loading={loading}
-								defaultPageSize={10}
-								showPagination={false}
-								sortable={false}
-								className="transactions-table"
-								getProps={() => block_columns_id}
-							/>
-						</div>
+				<div className={styles["block-table"]+" addresses-table"}>
+					<div>
+						<span>Latest blocks</span>
+						<Button><Link href="/blocks">View more</Link></Button>
 					</div>
+					<ReactTable
+						data={blocks}
+						columns={block_columns}
+						loading={loading}
+						defaultPageSize={10}
+						showPagination={false}
+						sortable={false}
+						className="transactions-table"
+						getProps={() => block_columns_id}
+					/>
 				</div>
-				<div>
-					<div className="block-table addresses-table">
-						<span>Latest transactions <Link href="/transactions">View more</Link></span>
-						<div>
-							<ReactTable
-								data={transactions}
-								columns={transaction_columns}
-								loading={loading}
-								defaultPageSize={10}
-								showPagination={false}
-								sortable={false}
-								className="transactions-table"
-								getProps={() => transaction_columns_id}
-							/>
-						</div>
+				<div className={styles["block-table"]+" addresses-table"}>
+					<div>
+						<span>Latest transactions</span>
+						<Button><Link href="/transactions">View more</Link></Button>
 					</div>
+					<ReactTable
+						data={transactions}
+						columns={transaction_columns}
+						loading={loading}
+						defaultPageSize={10}
+						showPagination={false}
+						sortable={false}
+						className="transactions-table"
+						getProps={() => transaction_columns_id}
+					/>
 				</div>
 			</div>
 		</Layout>

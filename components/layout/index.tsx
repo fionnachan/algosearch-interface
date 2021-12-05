@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import moment from 'moment';
+import Head from 'next/head';
 import styles from './Layout.module.css';
 
 import AddressHeader from '../addressheader';
@@ -41,32 +42,32 @@ const Layout = (props) => {
 
 	return (
 		<div className={styles.layout}>
+			<Head>
+				<link rel="preconnect" href="https://fonts.googleapis.com" />
+				<link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin />
+				<link
+					href="https://fonts.googleapis.com/css2?family=Lexend&display=swap"
+					rel="stylesheet"
+				></link>
+			</Head>
 			<div className={styles.topheader}>
 				<div className="sizer">
 					<HeaderSearch />
 				</div>
 			</div>
 			<div className={styles.bottomheader}>
-				<div className="sizer">
-					<MainHeader />
-				</div>
+				<MainHeader />
 			</div>
-			{props.addresspage ? (
-				<AddressHeader data={props.data} />
-			) : null}
-			{props.homepage ? (
-				<HomeHeader synced={props.synced} genesisId={props.genesisId} />
-			) : null}
-			<div className={`${styles.content} ${props.homepage ? styles["content-shortened"] : ""}`}>
+			{props.addresspage && <AddressHeader data={props.data}/>}
+			{props.homepage && <HomeHeader genesisId={props.genesisId}/>}
+			<div className={styles.content}>
 				<div className="sizer">
 					{props.children}
 				</div>
 			</div>
 			{props.homepage && (
 				<div className={styles.subfooter}>
-					<div className="sizer">
-						<HomeFooter />
-					</div>
+					<HomeFooter />
 				</div>
 			)}
 			<div>

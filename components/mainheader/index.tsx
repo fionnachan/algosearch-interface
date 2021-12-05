@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import Image from "next/image";
 import Link from 'next/link';
-import styles from './MainHeader.module.css';
+import styles from './MainHeader.module.scss';
 
 const MainHeader = () => {
 	const [open, setOpen] = useState(false);
@@ -24,18 +24,16 @@ const MainHeader = () => {
 	return (
 		<div className={styles.mainheader}>
 			<Link href="/">
-				<Image src="/algo.svg" width={14} height={14} alt="AlgoSearch logo" />
+				<span className={styles.logo}>AlgoSearch</span>
 			</Link>
-			<div className={styles.menu}>
-				<nav>
-					<ul>
-						<li><Link href="/">Home</Link></li>
-						<li><Link href="/blocks">Blocks</Link></li>
-						<li><Link href="/transactions">Transactions</Link></li>
-						<li><Link href="/dev">Developer APIs</Link></li>
-					</ul>
-				</nav>
-			</div>
+			<nav className={styles.menu}>
+				<ul>
+					<li><Link href="/">Home</Link></li>
+					<li><Link href="/blocks">Blocks</Link></li>
+					<li><Link href="/transactions">Transactions</Link></li>
+					<li><Link href="/dev">Developer APIs</Link></li>
+				</ul>
+			</nav>
 		</div>
 	);
 }

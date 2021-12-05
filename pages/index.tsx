@@ -9,7 +9,6 @@ import 'react-table-6/react-table.css';
 import AlgoIcon from '../components/algoicon';
 import Statscard from '../components/statscard';
 import Load from '../components/tableloading';
-import HomeSearch from '../components/homesearch';
 import styles from './Home.module.css';
 import { getAlgodClient, getAlgodv1Client } from '../utils/algorand';
 import algosdk from 'algosdk';
@@ -111,7 +110,6 @@ const Home = (props) => {
 
 	return (
 		<Layout synced={synced} genesisId={genesisId} homepage>
-			<HomeSearch />
 			<div className={"cardcontainer address-cards "+styles["home-cards"]}>
 				<Statscard
 					stat="Latest Round"

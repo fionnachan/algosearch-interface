@@ -1,0 +1,60 @@
+.mainheader {
+	display: flex;
+	justify-content: center;
+	width: 100%;
+}
+
+.logo {
+	display: flex;
+	align-items: center;
+	font-size: 24px;
+	font-weight: 500;
+}
+
+.menu {
+	ul {
+		list-style-type: none;
+		margin: 0;
+	}
+
+	li {
+		display: inline-block;
+		margin: 0px 5px;
+	}
+
+	a {
+		display: block;
+		font-size: 16px;
+		font-weight: 500;
+		color: #536d93;
+		text-decoration: none;
+		padding: 10px 10px;
+		background-color: #fff;
+
+		&:hover {
+			color: #337afe;
+		}
+	}
+}
+
+.active {
+	color: #337afe !important;
+}
+
+.hidden {
+	display: none !important;
+	opacity: 1;
+}
+
+.shown {
+	display: inline-block !important;
+}
+
+@media screen and (max-width: 950px) {
+	.menu > nav {
+		display: none;
+	}
+	.hamburger {
+		display: inline-block;
+	}
+}

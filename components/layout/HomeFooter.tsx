@@ -1,5 +1,5 @@
 import React from 'react';
-import styles from './HomeFooter.module.css';
+import styles from './HomeFooter.module.scss';
 
 const HomeFooter = () => {
     return (

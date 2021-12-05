@@ -2,19 +2,19 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import moment from 'moment';
 import Link from 'next/link';
+import TimeAgo from 'timeago-react';
 import Layout from '../components/layout';
 import {formatValue, siteName} from '../utils/constants';
-import ReactTable from 'react-table-6';
-import 'react-table-6/react-table.css';
 import AlgoIcon from '../components/algoicon';
 import Statscard from '../components/statscard';
 import Load from '../components/tableloading';
 import styles from './Home.module.css';
 import { getAlgodClient } from '../utils/algorand';
 import algosdk from 'algosdk';
-import { removeSpace } from '../utils/stringUtils';
+import { currencyFormatter, ellipseAddress, integerFormatter, microAlgosToAlgos, removeSpace } from '../utils/stringUtils';
 import { BigNumber } from 'bignumber.js';
 import Button from '@mui/material/Button';
+import Table from '../components/table';
 
 const Home = (props) => {
 	const [blocks, setBlocks] = useState([]);
@@ -30,12 +30,6 @@ const Home = (props) => {
 	const algod = getAlgodClient();
 
 	BigNumber.config({ DECIMAL_PLACES: 2 });
-	const currencyFormatter = new Intl.NumberFormat('en-US', {
-		style: 'currency',
-		currency: 'USD',
-	});
-	const integerFormatter = new Intl.NumberFormat('en-US');
-
 	const getLatest = () => {
 		axios({
 			method: 'get',
@@ -45,21 +39,19 @@ const Home = (props) => {
 				console.log("algod current round: ",response.data)
 				const genesisId = response.data['genesis-id'];
 				setCurrentRound(response.data.round);
-				setTransactions(response.data.transactions)
+				setTransactions(response.data.transactions.slice(0, 10))
 				setLoading(false);
 				setGenesisId(genesisId);
 
-				let pageNum = Math.floor(response.data.round/25);
-
 				axios({
 					method: 'get',
-					url: `${siteName}/v1/rounds?latest_blk=${response.data.round}&page=1&limit=25&order=desc`,
+					url: `${siteName}/v1/rounds?latest_blk=${response.data.round}&page=1&limit=10&order=desc`,
 				}).then(resp => {
 					console.log("blocks: ", resp.data)
 					setBlocks(resp.data.items);
 					setLoading(false);
 				}).catch(error => {
-					console.log("Exception when retrieving last 25 blocks: " + error);
+					console.log("Exception when retrieving last 10 blocks: " + error);
 				})
 			}
 		}).catch(error => {
@@ -98,9 +90,8 @@ const Home = (props) => {
 			.then(results => {
 				const _results = {
 					"current_round": integerFormatter.format(results.current_round),
-					"online-money": currencyFormatter.format(new BigNumber(results["online-money"]).dividedBy(1e6).toNumber())
+					"online-money": currencyFormatter.format(microAlgosToAlgos(results["online-money"]))
 				}
-				console.log("supply: ",_results)
 				setLedger(_results);
 			})
 			.catch(error => {
@@ -113,24 +104,24 @@ const Home = (props) => {
 	}, []);
 	
 	const block_columns = [
-		{Header: 'Round', accessor: 'round', Cell: ({value}) => {
+		{Header: 'Block', accessor: 'round', Cell: ({value}) => {
 			const _value = value.toString().replace(" ", "");
 			return (
-				<Link href={`/block/${_value}`}>{_value}</Link>
+				<Link href={`/block/${_value}`}>{integerFormatter.format(_value)}</Link>
 			)
 		}},
-		{Header: 'Proposer', accessor: 'proposer',  Cell: props => <Link href={`/address/${props.value}`}>{props.value}</Link>},
+		{Header: 'Proposer', accessor: 'proposer',  Cell: props => <Link href={`/address/${props.value}`}>{ellipseAddress(props.value)}</Link>},
 		{Header: '# TX', accessor: 'numtxn', Cell: props => <span className="nocolor">{props.value}</span>},
-		{Header: 'Time', accessor: 'timestamp', Cell: props => <span className="nocolor">{moment.unix(props.value).fromNow()}</span>}
+		{Header: 'Time', accessor: 'timestamp', Cell: props => <TimeAgo datetime={new Date(moment.unix(props.value)._d)}></TimeAgo>}
 	];
 	const block_columns_id = {id: "home-latest-block-sizing"};
 
 	const transaction_columns = [
-		{Header: 'TX ID', accessor: 'id', Cell: props => <Link href={`/transaction/${props.value}`}>{props.value}</Link>},
-		{Header: 'From', accessor: 'sender',  Cell: props => <Link href={`/address/${props.value}`}>{props.value}</Link>},
-		{Header: 'To', accessor: 'payment-transaction.receiver',  Cell: props => <Link href={`/address/${props.value}`}>{props.value}</Link>},
+		{Header: 'TX ID', accessor: 'id', Cell: props => <Link href={`/transaction/${props.value}`}>{ellipseAddress(props.value)}</Link>},
+		{Header: 'From', accessor: 'sender',  Cell: props => <Link href={`/address/${props.value}`}>{ellipseAddress(props.value)}</Link>},
+		{Header: 'To', accessor: 'payment-transaction.receiver',  Cell: props => props.value && <Link href={`/address/${props.value}`}>{ellipseAddress(props.value)}</Link>},
 		{Header: 'Amount', accessor: 'payment-transaction.amount', Cell: props => <span>{<span className="nocolor">{formatValue(props.value / 1000000)}</span>} <AlgoIcon /></span>},
-		{Header: 'Time', accessor: 'round-time', Cell: props => <span className="nocolor">{moment.unix(props.value).fromNow()}</span>}
+		{Header: 'Time', accessor: 'round-time', Cell: props => <span className="nocolor">{<TimeAgo datetime={new Date(moment.unix(props.value)._d)}></TimeAgo>}</span>}
 	];
 	const transaction_columns_id = {id: "home-latest-transaction-sizing"};
 
@@ -170,13 +161,10 @@ const Home = (props) => {
 						<span>Latest blocks</span>
 						<Button><Link href="/blocks">View more</Link></Button>
 					</div>
-					<ReactTable
+					<Table
 						data={blocks}
 						columns={block_columns}
 						loading={loading}
-						defaultPageSize={10}
-						showPagination={false}
-						sortable={false}
 						className="transactions-table"
 						getProps={() => block_columns_id}
 					/>
@@ -186,13 +174,10 @@ const Home = (props) => {
 						<span>Latest transactions</span>
 						<Button><Link href="/transactions">View more</Link></Button>
 					</div>
-					<ReactTable
+					<Table
 						data={transactions}
 						columns={transaction_columns}
 						loading={loading}
-						defaultPageSize={10}
-						showPagination={false}
-						sortable={false}
 						className="transactions-table"
 						getProps={() => transaction_columns_id}
 					/>

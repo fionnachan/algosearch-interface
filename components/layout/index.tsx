@@ -49,15 +49,10 @@ const Layout = (props) => {
 					href="https://fonts.googleapis.com/css2?family=Lexend&display=swap"
 					rel="stylesheet"
 				></link>
+				<link rel="shortcut icon" href="/favicon.svg" />
+				<title>AlgoSearch | Algorand Block Explorer</title>
 			</Head>
-			<div className={styles.topheader}>
-				<div className="sizer">
-					<HeaderSearch />
-				</div>
-			</div>
-			<div className={styles.bottomheader}>
-				<MainHeader />
-			</div>
+			<MainHeader />
 			{props.addresspage && <AddressHeader data={props.data}/>}
 			{props.homepage && <HomeHeader genesisId={props.genesisId}/>}
 			<div className={styles.content}>

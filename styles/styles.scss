@@ -1,11 +1,11 @@
 :root {
-    --blue-darkest: #071376;
-    --blue-darker: #072396;
-    --blue-dark: #0733b6;
+    --blue-darkest: #022137;
+    --blue-darker: #1d326b;
+    --blue-dark: #4266a3;
     --blue: #0763d6;
     --blue-light: #3c90f7;
-    --blue-lighter: #6cc0f7;
-    --blue-lightest: #e4f3ff;
+    --blue-lighter: #9ab8cc;
+    --blue-lightest: #fafcff;
     --grey-darkest: #333333;
     --grey-darker: #666666;
     --grey-dark: #888888;
@@ -13,6 +13,9 @@
     --grey-light: #cccccc;
     --grey-lighter: #dddddd;
     --grey-lightest: #efefef;
+    --font-family: 'Lexend', -apple-system, BlinkMacSystemFont, Segoe UI, Roboto,
+    Oxygen, Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue,
+    sans-serif;
     --font-size-xxl: 1.5rem;
     --font-size-xl: 1.25rem;
     --font-size-l: 1.125rem;
@@ -35,9 +38,8 @@ html,
 body {
     padding: 0;
     margin: 0;
-    font-family: 'Lexend', -apple-system, BlinkMacSystemFont, Segoe UI, Roboto,
-    Oxygen, Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue,
-    sans-serif;
+    color: var(--grey-darkest);
+    font-family: var(--font-family);
 }
 
 * {

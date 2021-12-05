@@ -3,57 +3,15 @@ import axios from 'axios';
 import Link from 'next/link';
 import Layout from '../../components/layout';
 import Breadcrumbs from '../../components/breadcrumbs';
-import Statscard from '../../components/statscard';
-import ReactTable from 'react-table-6';
-import { useTable } from 'react-table';
+
 import AlgoIcon from '../../components/algoicon';
 import 'react-table-6/react-table.css';
-import {formatValue, siteName} from '../../utils/constants';
+import {siteName} from '../../utils/constants';
 import Load from '../../components/tableloading';
 import styles from './Transactions.module.css';
 import statscardStyles from '../../components/statscard/Statscard.module.scss';
-import { removeSpace } from '../../utils/stringUtils';
-
-const Table = ({ columns, data }) => {
-	// Use the state and functions returned from useTable to build your UI
-	const {
-	  getTableProps,
-	  getTableBodyProps,
-	  headerGroups,
-	  rows,
-	  prepareRow,
-	} = useTable({
-	  columns,
-	  data,
-	})
-
-	// Render the UI for your table
-	return (
-	  <table {...getTableProps()}>
-		<thead>
-		  {headerGroups.map(headerGroup => (
-			<tr {...headerGroup.getHeaderGroupProps()}>
-			  {headerGroup.headers.map(column => (
-				<th {...column.getHeaderProps()}>{column.render('Header')}</th>
-			  ))}
-			</tr>
-		  ))}
-		</thead>
-		<tbody {...getTableBodyProps()}>
-		  {rows.map((row, i) => {
-			prepareRow(row)
-			return (
-			  <tr {...row.getRowProps()}>
-				{row.cells.map(cell => 
-				  <td {...cell.getCellProps()}>{cell.render('Cell')}</td>
-				)}
-			  </tr>
-			)
-		  })}
-		</tbody>
-	  </table>
-	)
-  }
+import { ellipseAddress, integerFormatter, microAlgosToAlgos, microAlgosToAlgosSmall, removeSpace } from '../../utils/stringUtils';
+import Table from '../../components/table';
 
 const Transactions = (props) => {
 	const [loading, setLoading] = useState(true);
@@ -76,9 +34,7 @@ const Transactions = (props) => {
 			method: 'get',
 			url: `${siteName}/v1/current-txn`
 		}).then(response => {
-			console.log("current txn: ",response.data);
 			setLatestTransaction(response.data);
-			setLoading(false);
 			if (response.data) {
 				return response.data.id;
 			}
@@ -91,7 +47,7 @@ const Transactions = (props) => {
 				method: 'get',
 				url: `${siteName}/v1/transactions?latest_txn=${latestTxn}&page=10&limit=${pageSize}&order=desc` // Use pageSize from state
 			}).then(response => {
-				console.log("transactions: ", response.data.items)
+				setMaxTransactions(response.data.num_of_txns);
 				setTransactions(response.data.items);
 				setLoading(false);
 			}).catch(error => {
@@ -127,14 +83,14 @@ const Transactions = (props) => {
 	const columns = [
 		{Header: 'Round', accessor: 'confirmed-round', Cell: ({value}) => {
 			const _value = removeSpace(value.toString());
-			return <Link href={`/block/${_value}`}>{_value}</Link>
+			return <Link href={`/block/${_value}`}>{integerFormatter.format(_value)}</Link>
 		}},
-		{Header: 'TX ID', accessor: 'id', Cell: props => <Link href={`/tx/${props.value}`}>{props.value}</Link>},
+		{Header: 'TX ID', accessor: 'id', Cell: props => <Link href={`/tx/${props.value}`}>{ellipseAddress(props.value)}</Link>},
 		{Header: 'Type', accessor: 'tx-type', Cell: props => <span className="type noselect">{props.value}</span>},
-		{Header: 'From', accessor: 'sender', Cell: props => <Link href={`/address/${props.value}`}>{props.value}</Link>},
-		{Header: 'To', accessor: 'payment-transaction.receiver', Cell: props => <Link href={`/address/${props.value}`}>{props.value}</Link>},
-		{Header: 'Amount', accessor: 'payment-transaction.amount', Cell: props => <span>{formatValue(props.value)} <AlgoIcon /></span>},
-		{Header: 'Fee', accessor: 'fee', Cell: props => <span>{formatValue(props.value)} <AlgoIcon /></span>}
+		{Header: 'From', accessor: 'sender', Cell: props => <Link href={`/address/${props.value}`}>{ellipseAddress(props.value)}</Link>},
+		{Header: 'To', accessor: 'payment-transaction.receiver', Cell: props => <Link href={`/address/${props.value}`}>{ellipseAddress(props.value)}</Link>},
+		{Header: 'Amount', accessor: 'payment-transaction.amount', Cell: props => <span>{microAlgosToAlgos(props.value)} <AlgoIcon /></span>},
+		{Header: 'Fee', accessor: 'fee', Cell: props => <span>{microAlgosToAlgos(props.value)} <AlgoIcon /></span>}
 	];
 
 	return (
@@ -145,42 +101,13 @@ const Transactions = (props) => {
 				parentLinkName="Home"
 				currentLinkName="All Transactions"
 			/>
-			<div className={statscardStyles["cardcontainer"]}>
-				<Statscard
-					stat="Transaction last seen"
-					value={loading
-						? <Load />
-						: latestTransaction.id}
-				/>
-				<Statscard
-					stat="Transactions sent (24H)"
-					value=""
-				/>
-				<Statscard
-					stat="Volume (24H)"
-					value=""
-				/>
-			</div>
 			<div className="table">
 				<div>
-					<p>{loading ? "Loading" : formatValue(maxTransactions)} transactions found</p>
+					<p>{maxTransactions} transactions found</p>
 					<p>(Showing the last {transactions.length} records)</p>
 				</div>
 				<div>
-					{/* <ReactTable
-						pageIndex={0}
-						pages={pages}
-						data={transactions.items}
-						columns={columns}
-						loading={loading}
-						defaultPageSize={25}
-						pageSizeOptions={[25, 50, 100]}
-						onPageChange={pageIndex => updateTransactions(pageIndex)}
-						onPageSizeChange={(pageSize, pageIndex) => updatePageSize(pageIndex, pageSize)}
-						sortable={false}
-						className={styles["transactions-table"]}
-						manual
-					/> */}
+					{loading && <Load />}
 					{transactions.length > 0 && 
 						<Table
 							columns={columns}

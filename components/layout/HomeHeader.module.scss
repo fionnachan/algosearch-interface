@@ -1,0 +1,21 @@
+.home-header {
+	display: flex;
+	justify-content: center;
+	width: 100%;
+	background-color: #fafcff;
+	box-shadow: inset 0px 3px 8px rgb(151, 164, 175, .05);
+	padding: var(--space-xxxl) var(--space-m);
+	border-bottom: 1px solid #e7eaf3;
+}
+
+.content {
+	display: inline-block;
+	width: 100%;
+	text-align: center;
+
+	span {
+		display: inline-flex;
+		color: var(--blue-dark);
+		margin: var(--space-xs) 0 0;
+	}
+}

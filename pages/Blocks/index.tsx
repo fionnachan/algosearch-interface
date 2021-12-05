@@ -5,60 +5,14 @@ import Link from 'next/link';
 import Layout from '../../components/layout';
 import Breadcrumbs from '../../components/breadcrumbs';
 import Statscard from '../../components/statscard';
-import ReactTable from 'react-table-6';
-import { useTable } from 'react-table';
-import 'react-table-6/react-table.css';
 import AlgoIcon from '../../components/algoicon';
 import Load from '../../components/tableloading';
 import {siteName, formatValue} from '../../utils/constants';
 import styles from './Blocks.module.css';
 import statscardStyles from '../../components/statscard/Statscard.module.scss';
 import algosdk from 'algosdk';
-
-const Table = ({ columns, data }) => {
-	// Use the state and functions returned from useTable to build your UI
-	const {
-	  getTableProps,
-	  getTableBodyProps,
-	  headerGroups,
-	  rows,
-	  prepareRow,
-	} = useTable({
-	  columns,
-	  data,
-	})
-
-	// Render the UI for your table
-	return (
-	  <table {...getTableProps()}>
-		<thead>
-		  {headerGroups.map(headerGroup => (
-			<tr {...headerGroup.getHeaderGroupProps()}>
-			  {headerGroup.headers.map(column => {
-				  
-				  console.log("column: ",column)
-				  return (
-				<th {...column.getHeaderProps()}>{column.render('Header')}</th>
-			  )})}
-			</tr>
-		  ))}
-		</thead>
-		<tbody {...getTableBodyProps()}>
-		  {rows.map((row, i) => {
-			prepareRow(row)
-			return (
-			  <tr {...row.getRowProps()}>
-				{row.cells.map(cell => {
-					// {cell.render('Cell')}
-				  return <td {...cell.getCellProps()}>{cell.render('Cell')}</td>
-				})}
-			  </tr>
-			)
-		  })}
-		</tbody>
-	  </table>
-	)
-  }
+import { ellipseAddress } from '../../utils/stringUtils';
+import Table from '../../components/table';
 
 const Blocks = (props) => {
 
@@ -140,7 +94,7 @@ const Blocks = (props) => {
 			{
 				Header: 'Proposed by',
 				accessor: 'proposer',
-				Cell: ({value}) => <Link href={`/address/${value}`}>{value}</Link>
+				Cell: ({value}) => <Link href={`/address/${value}`}>{ellipseAddress(value)}</Link>
 			},
 			{
 				Header: 'Time',
@@ -162,7 +116,7 @@ const Blocks = (props) => {
 			/>
 			<div className={statscardStyles["cardcontainer"]}>
 				<Statscard
-					stat="Latest round"
+					stat="Latest Block"
 					value={loading ? <Load /> : formatValue(currentRound)}
 				/>
 				<Statscard
@@ -170,7 +124,7 @@ const Blocks = (props) => {
 					value={loading ? <Load /> : (<span>{avgBlockTime}s</span>)}
 				/>
 				<Statscard
-					stat="Reward Rate"
+					stat="Block Reward"
 					value={loading ? <Load /> : (
 						<div>
 							{rewardRate}

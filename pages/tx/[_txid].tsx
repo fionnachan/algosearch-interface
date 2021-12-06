@@ -35,6 +35,9 @@ const Transaction = (props) => {
 	}, []);
 
 	useEffect(() => {
+		if (!_txid) {
+			return;
+		}
 		setTxid(_txid.toString());
 		getTransaction(txid);
 	}, [_txid]);

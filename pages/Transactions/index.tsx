@@ -9,8 +9,7 @@ import 'react-table-6/react-table.css';
 import {siteName} from '../../utils/constants';
 import Load from '../../components/tableloading';
 import styles from './Transactions.module.css';
-import statscardStyles from '../../components/statscard/Statscard.module.scss';
-import { ellipseAddress, integerFormatter, microAlgosToAlgos, microAlgosToAlgosSmall, removeSpace } from '../../utils/stringUtils';
+import { ellipseAddress, integerFormatter, microAlgosToAlgos, removeSpace } from '../../utils/stringUtils';
 import Table from '../../components/table';
 
 const Transactions = (props) => {
@@ -83,7 +82,7 @@ const Transactions = (props) => {
 	const columns = [
 		{Header: 'Round', accessor: 'confirmed-round', Cell: ({value}) => {
 			const _value = removeSpace(value.toString());
-			return <Link href={`/block/${_value}`}>{integerFormatter.format(_value)}</Link>
+			return <Link href={`/block/${_value}`}>{integerFormatter.format(Number(_value))}</Link>
 		}},
 		{Header: 'TX ID', accessor: 'id', Cell: props => <Link href={`/tx/${props.value}`}>{ellipseAddress(props.value)}</Link>},
 		{Header: 'Type', accessor: 'tx-type', Cell: props => <span className="type noselect">{props.value}</span>},

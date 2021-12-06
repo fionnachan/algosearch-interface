@@ -3,6 +3,7 @@ import axios from 'axios';
 import moment from 'moment';
 import Link from 'next/link';
 import TimeAgo from 'timeago-react';
+import * as timeago from 'timeago.js';
 import Layout from '../components/layout';
 import {formatValue, siteName} from '../utils/constants';
 import AlgoIcon from '../components/algoicon';
@@ -10,8 +11,7 @@ import Statscard from '../components/statscard';
 import Load from '../components/tableloading';
 import styles from './Home.module.css';
 import { getAlgodClient } from '../utils/algorand';
-import algosdk from 'algosdk';
-import { currencyFormatter, ellipseAddress, integerFormatter, microAlgosToAlgos, removeSpace } from '../utils/stringUtils';
+import { currencyFormatter, ellipseAddress, integerFormatter, microAlgosToAlgos, removeSpace, timeAgoLocale } from '../utils/stringUtils';
 import { BigNumber } from 'bignumber.js';
 import Button from '@mui/material/Button';
 import Table from '../components/table';
@@ -25,13 +25,14 @@ const Home = (props) => {
 	const [price, setPrice] = useState(0);
 	const [circulatingSupply, setCirculatingSupply] = useState("");
 	const [ledger, setLedger] = useState({});
-	const [synced, setSynced] = useState(false);
 
 	const algod = getAlgodClient();
 
+	timeago.register('en_short', timeAgoLocale);
+
 	BigNumber.config({ DECIMAL_PLACES: 2 });
 	const getLatest = () => {
-		axios({
+		return axios({
 			method: 'get',
 			url: `${siteName}/v1/algod/current-round`
 		}).then(response => {
@@ -40,16 +41,14 @@ const Home = (props) => {
 				const genesisId = response.data['genesis-id'];
 				setCurrentRound(response.data.round);
 				setTransactions(response.data.transactions.slice(0, 10))
-				setLoading(false);
 				setGenesisId(genesisId);
 
-				axios({
+				return axios({
 					method: 'get',
 					url: `${siteName}/v1/rounds?latest_blk=${response.data.round}&page=1&limit=10&order=desc`,
 				}).then(resp => {
 					console.log("blocks: ", resp.data)
-					setBlocks(resp.data.items);
-					setLoading(false);
+					return resp.data;
 				}).catch(error => {
 					console.log("Exception when retrieving last 10 blocks: " + error);
 				})
@@ -60,25 +59,23 @@ const Home = (props) => {
 	};
 
 	const getPrice = () => {
-		axios({
+		return axios({
 			method: 'get',
 			url: 'https://api.coingecko.com/api/v3/simple/price?ids=algorand&vs_currencies=usd'
 		}).then(response => {
-			setPrice(response.data.algorand.usd);
-			setLoading(false);
+			return response.data.algorand.usd;
 		}).catch(error => {
 			console.error("Error when retrieving Algorand price from CoinGecko: " + error);
 		})
 	}
 
 	const getCirculatingSupply = () => {
-		axios({
+		return axios({
 			method: 'get',
 			url: 'https://metricsapi.algorand.foundation/v1/supply/circulating?unit=algo'
 		}).then(response => {
 			const _circulatingSupply = currencyFormatter.format(response.data);
-			setCirculatingSupply(_circulatingSupply);
-			setLoading(false);
+			return _circulatingSupply;
 		}).catch(error => {
 			console.error("Error when retrieving Algorand circulating suppy: " + error);
 		})
@@ -98,9 +95,14 @@ const Home = (props) => {
 				console.error("Error when retrieving ledger supply from Algod: " + error);
 			});
 
-		getPrice();
-		getCirculatingSupply();
-		getLatest();
+		Promise.all([getPrice(), getCirculatingSupply(), getLatest()])
+			.then((results) => {
+				console.log("Promise.all results: ",results)
+				setPrice(results[0]);
+				setCirculatingSupply(results[1] || "");
+				setBlocks(results[2] || []);
+				setLoading(false);
+			})
 	}, []);
 	
 	const block_columns = [
@@ -112,7 +114,7 @@ const Home = (props) => {
 		}},
 		{Header: 'Proposer', accessor: 'proposer',  Cell: props => <Link href={`/address/${props.value}`}>{ellipseAddress(props.value)}</Link>},
 		{Header: '# TX', accessor: 'numtxn', Cell: props => <span className="nocolor">{props.value}</span>},
-		{Header: 'Time', accessor: 'timestamp', Cell: props => <TimeAgo datetime={new Date(moment.unix(props.value)._d)}></TimeAgo>}
+		{Header: 'Time', accessor: 'timestamp', Cell: props => <TimeAgo datetime={new Date(moment.unix(props.value)._d)} locale="en_short"></TimeAgo>}
 	];
 	const block_columns_id = {id: "home-latest-block-sizing"};
 
@@ -121,12 +123,12 @@ const Home = (props) => {
 		{Header: 'From', accessor: 'sender',  Cell: props => <Link href={`/address/${props.value}`}>{ellipseAddress(props.value)}</Link>},
 		{Header: 'To', accessor: 'payment-transaction.receiver',  Cell: props => props.value && <Link href={`/address/${props.value}`}>{ellipseAddress(props.value)}</Link>},
 		{Header: 'Amount', accessor: 'payment-transaction.amount', Cell: props => <span>{<span className="nocolor">{formatValue(props.value / 1000000)}</span>} <AlgoIcon /></span>},
-		{Header: 'Time', accessor: 'round-time', Cell: props => <span className="nocolor">{<TimeAgo datetime={new Date(moment.unix(props.value)._d)}></TimeAgo>}</span>}
+		{Header: 'Time', accessor: 'round-time', Cell: props => <span className="nocolor">{<TimeAgo datetime={new Date(moment.unix(props.value)._d)} locale="en_short"></TimeAgo>}</span>}
 	];
 	const transaction_columns_id = {id: "home-latest-transaction-sizing"};
 
 	return (
-		<Layout synced={synced} genesisId={genesisId} homepage>
+		<Layout genesisId={genesisId} homepage>
 			<div className={"cardcontainer address-cards "+styles["home-cards"]}>
 				<Statscard
 					stat="Latest Round"

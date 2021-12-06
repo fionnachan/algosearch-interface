@@ -36,11 +36,14 @@ const Address = (props) => {
 	};
 
 	useEffect(() => {
+		if (!_address) {
+			return;
+		}
 		console.log("_address: ",_address)
 		setAddress(_address.toString());
 		document.title=`AlgoSearch | Address ${address}`;
 		getAddressData(_address);
-	}, [router]);
+	}, [_address]);
 
 	const columns = [
 		{Header: '#', accessor: 'confirmed-round', Cell: props => <span className="rownumber">{props.index + 1}</span>},

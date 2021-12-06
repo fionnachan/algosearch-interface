@@ -1,0 +1,97 @@
+.address-header {
+	width: 100%;
+	background-color: #fafcff;
+	border-bottom: 1px solid #e7eaf3;
+
+	> div {
+		display: flex;
+		justify-content: space-between;
+		align-items: flex-end;
+		padding: var(--space-xxxl) 0;
+		margin: auto;
+	}
+
+	> div > div:first-child {
+		h3 {
+			color: rgb(30, 32, 34);
+			font-size: 20px;
+			margin-bottom: var(--space-xs);
+		}
+
+		p {
+			width: 100%;
+			color: #536d93;
+			margin: 0;
+			white-space: nowrap;
+			overflow: hidden;
+			text-overflow: ellipsis;
+		}
+	}
+
+	h4 {
+		color: #536d93;
+		text-transform: uppercase;
+		margin-bottom: var(--space-xs);
+	}
+}
+
+.balance {
+	font-size: 24px;
+	font-weight: 500;
+	
+	span {
+		display: inline-flex;
+		margin-left: var(--space-xxs);
+	}
+}
+
+.address-button {
+	border: none;
+	background-color: rgba(105, 132, 170, 0.1);
+	vertical-align: middle;
+	margin: 0px 5px;
+	border-radius: 50%;
+	width: 28px;
+	height: 28px;
+	transition: ease-in-out 200ms;
+}
+
+.address-button:focus {
+	outline: none;
+}
+
+.copy {
+	transform: translateX(1.3px);
+}
+
+.address-button > svg {
+	vertical-align: middle;
+}
+
+.address-button:hover {
+	background-color: #536d93;
+	box-shadow: 0 4px 11px rgba(105,132,170,.35);
+}
+
+.address-button:hover svg > path {
+	fill: #fff !important;
+}
+
+.qr-style {
+	padding: 5px 5px 2.5px 5px !important;
+	margin-top: 7px !important;
+}
+
+.copy-style {
+	margin-top: -3px !important;
+	z-index: 2000;
+}
+
+@media screen and (max-width: 600px) {
+	.address-header {
+		padding-left: 5px;
+	}
+	.address-header > div {
+		width: calc(95vw - 10px);
+	}
+}

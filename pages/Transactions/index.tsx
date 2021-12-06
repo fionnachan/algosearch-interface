@@ -5,7 +5,6 @@ import Layout from '../../components/layout';
 import Breadcrumbs from '../../components/breadcrumbs';
 
 import AlgoIcon from '../../components/algoicon';
-import 'react-table-6/react-table.css';
 import {siteName} from '../../utils/constants';
 import Load from '../../components/tableloading';
 import styles from './Transactions.module.css';

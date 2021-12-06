@@ -2,7 +2,7 @@ import Configuration from "./config.testnet";
 
 export interface ApiConf {
     host: string
-    port: number
+    port: number | string
     token: string
 }
 

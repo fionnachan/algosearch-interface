@@ -1,9 +1,10 @@
 :root {
+    --bg-blue-light: #f5faff;
     --blue-darkest: #022137;
     --blue-darker: #1d326b;
     --blue-dark: #4266a3;
     --blue: #0763d6;
-    --blue-light: #3c90f7;
+    --blue-light: #438ce6;
     --blue-lighter: #9ab8cc;
     --blue-lightest: #fafcff;
     --grey-darkest: #333333;
@@ -36,18 +37,27 @@
 
 html,
 body {
-    padding: 0;
-    margin: 0;
-    color: var(--grey-darkest);
-    font-family: var(--font-family);
+  font-family: var(--font-family);
+  font-weight: 300;
+  color: var(--grey-darkest);
+  padding: 0;
+  margin: 0;
 }
 
 * {
-    box-sizing: border-box;
+  box-sizing: border-box;
 }
 
 h1, h2, h3, h4, h5, h6 {
     margin: 0;
+}
+
+a {
+  color: var(--blue-light);
+
+  &:hover {
+    color: var(--blue);
+  }
 }
 
 .container {
@@ -88,8 +98,7 @@ footer a {
 }
 
 a {
-    color: inherit;
-    text-decoration: none;
+  text-decoration: none;
 }
 
 .title a {

@@ -15,6 +15,7 @@ import { currencyFormatter, ellipseAddress, integerFormatter, microAlgosToAlgos,
 import { BigNumber } from 'bignumber.js';
 import Button from '@mui/material/Button';
 import Table from '../components/table';
+import TransactionTable from '../components/table/TransactionTable';
 
 const Home = (props) => {
 	const [blocks, setBlocks] = useState([]);
@@ -138,8 +139,7 @@ const Home = (props) => {
 					stat="Online Stake"
 					value={loading ? <Load /> : (
 						<div>
-							{ledger['online-money']}
-							<AlgoIcon />
+							<AlgoIcon /> {ledger['online-money']}
 						</div>
 					)}
 				/>
@@ -147,14 +147,13 @@ const Home = (props) => {
 					stat="Circulating supply"
 					value={loading ? <Load /> : (
 						<div>
-							{circulatingSupply}
-							<AlgoIcon />
+							<AlgoIcon /> {circulatingSupply}
 						</div>
 					)}
 				/>
 				<Statscard
 					stat="Algo Price"
-					value={loading ? <Load /> : '$' + formatValue(price)}
+					value={loading ? <Load /> : `$${price}`}
 				/>
 			</div>
 			<div className={styles["home-split"]}>
@@ -171,18 +170,14 @@ const Home = (props) => {
 						getProps={() => block_columns_id}
 					/>
 				</div>
-				<div className={styles["block-table"]+" addresses-table"}>
+				<div className={styles["block-table"]}>
 					<div>
 						<span>Latest transactions</span>
 						<Button><Link href="/transactions">View more</Link></Button>
 					</div>
-					<Table
-						data={transactions}
-						columns={transaction_columns}
-						loading={loading}
-						className="transactions-table"
-						getProps={() => transaction_columns_id}
-					/>
+          <TransactionTable
+            transactions={transactions}
+          />
 				</div>
 			</div>
 		</Layout>

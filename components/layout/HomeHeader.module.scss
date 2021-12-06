@@ -2,7 +2,7 @@
 	display: flex;
 	justify-content: center;
 	width: 100%;
-	background-color: #fafcff;
+	background-color: var(--bg-blue-light);
 	box-shadow: inset 0px 3px 8px rgb(151, 164, 175, .05);
 	padding: var(--space-xxxl) var(--space-m);
 	border-bottom: 1px solid #e7eaf3;

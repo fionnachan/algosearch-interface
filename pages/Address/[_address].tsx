@@ -11,6 +11,7 @@ import AlgoIcon from '../../components/algoicon';
 import ReactTable from 'react-table-6';
 import 'react-table-6/react-table.css';
 import styles from './Address.module.css';
+import statcardStyles from '../../components/statscard/Statscard.module.scss';
 import { getAlgodClient } from '../../utils/algorand';
 
 const Address = (props) => {
@@ -33,6 +34,15 @@ const Address = (props) => {
 			.catch(error => {
 				console.error("Exception when querying for address information: " + error);
 			});
+    // axios({
+    //   method: 'get',
+    //   url: `${siteName}/transactions/acct/${address}?page=1&limit=10&order=desc`
+    // }).then(response => {
+    //   console.log("address data: ", response.data);
+    // })
+    // .catch(error => {
+    //   console.error("Exception when querying for address information: " + error);
+    // });
 	};
 
 	useEffect(() => {
@@ -62,7 +72,7 @@ const Address = (props) => {
 			"balance": formatValue(data['amount-without-pending-rewards'] / 1000000)
 		}}
 		addresspage>
-			<div className="cardcontainer address-cards">
+			<div className={`${statcardStyles["cardcontainer"]} ${statcardStyles["address-cards"]}`}>
 				<Statscard
 					stat="Rewards"
 					value={loading ? <Load /> : (

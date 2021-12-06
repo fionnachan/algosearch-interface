@@ -1,0 +1,49 @@
+.transaction-table {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.5;
+  font-size: var(--font-size-s);
+  background-color: white;
+  border-radius: 4px;
+  box-shadow: 0 0px 6px rgba(0,0,0,0.12);
+}
+
+.transaction-row {
+  width: 100%;
+  padding: var(--space-s);
+  // border-bottom: 1px solid var(--grey-light);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.12);
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.transaction-subrow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.time {
+  flex: 0 0 auto;
+  font-size: var(--font-size-xs);
+  margin-left: var(--space-l);
+}
+
+.transaction-id {
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+}
+
+.relevant-accounts {
+  display: flex;
+  flex-direction: column;
+}
+
+.transaction-info {
+  display: flex;
+  flex-direction: column;
+  text-align: right;
+}

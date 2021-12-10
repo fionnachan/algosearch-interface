@@ -45,7 +45,8 @@ const Transactions = (props) => {
 				method: 'get',
 				url: `${siteName}/v1/transactions?latest_txn=${latestTxn}&page=10&limit=${pageSize}&order=desc` // Use pageSize from state
 			}).then(response => {
-				setMaxTransactions(response.data.num_of_txns);
+        console.log("txs: ",response.data);
+        setMaxTransactions(response.data.num_of_txns);
 				setTransactions(response.data.items);
 				setLoading(false);
 			}).catch(error => {
@@ -60,7 +61,7 @@ const Transactions = (props) => {
 		let headTransaction = pageIndex * pageSize;
 		axios({
 			method: 'get',
-			url: `${siteName}/transactions?latest_txn=0&page=0&limit=${pageSize}&order=desc`,
+			url: `${siteName}/v1/transactions?latest_txn=0&page=0&limit=${pageSize}&order=desc`,
 		}).then(response => {
 			console.log("txs: ",response.data);
 			setTransactions(response.data.transactions);
@@ -87,8 +88,8 @@ const Transactions = (props) => {
 		{Header: 'Type', accessor: 'tx-type', Cell: props => <span className="type noselect">{props.value}</span>},
 		{Header: 'From', accessor: 'sender', Cell: props => <Link href={`/address/${props.value}`}>{ellipseAddress(props.value)}</Link>},
 		{Header: 'To', accessor: 'payment-transaction.receiver', Cell: props => <Link href={`/address/${props.value}`}>{ellipseAddress(props.value)}</Link>},
-		{Header: 'Amount', accessor: 'payment-transaction.amount', Cell: props => <span>{microAlgosToAlgos(props.value)} <AlgoIcon /></span>},
-		{Header: 'Fee', accessor: 'fee', Cell: props => <span>{microAlgosToAlgos(props.value)} <AlgoIcon /></span>}
+		{Header: 'Amount', accessor: 'payment-transaction.amount', Cell: props => <span><AlgoIcon /> {microAlgosToAlgos(props.value)}</span>},
+		{Header: 'Fee', accessor: 'fee', Cell: props => <span><AlgoIcon /> {microAlgosToAlgos(props.value)}</span>}
 	];
 
 	return (
@@ -101,7 +102,7 @@ const Transactions = (props) => {
 			/>
 			<div className="table">
 				<div>
-					<p>{maxTransactions} transactions found</p>
+					<p>{integerFormatter.format(maxTransactions)} transactions found</p>
 					<p>(Showing the last {transactions.length} records)</p>
 				</div>
 				<div>

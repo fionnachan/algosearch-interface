@@ -21,6 +21,14 @@ const TransactionTable = ({transactions}) => {
           //       console.log("asa? ", results)
           //     })
           // }
+
+          
+          // * (pay) payment-transaction
+          // * (keyreg) keyreg-transaction
+          // * (acfg) asset-config-transaction
+          // * (axfer) asset-transfer-transaction
+          // * (afrz) asset-freeze-transaction
+          // * (appl) application-transaction
           
 
           return (

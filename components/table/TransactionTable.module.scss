@@ -2,17 +2,16 @@
   display: flex;
   flex-direction: column;
   line-height: 1.5;
-  font-size: var(--font-size-s);
-  background-color: white;
+  font-size: var(--font-size-xs);
   border-radius: 4px;
-  box-shadow: 0 0px 6px rgba(0,0,0,0.12);
 }
 
 .transaction-row {
   width: 100%;
   padding: var(--space-s);
-  // border-bottom: 1px solid var(--grey-light);
-  box-shadow: 0 2px 4px rgba(0,0,0,0.12);
+  background-color: white;
+  margin-bottom: 6px;
+  box-shadow: 0 1px 4px rgba(0,0,0,0.12);
 
   &:last-child {
     border-bottom: none;
@@ -27,7 +26,6 @@
 
 .time {
   flex: 0 0 auto;
-  font-size: var(--font-size-xs);
   margin-left: var(--space-l);
 }
 

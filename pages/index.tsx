@@ -101,7 +101,7 @@ const Home = (props) => {
 				console.log("Promise.all results: ",results)
 				setPrice(results[0]);
 				setCirculatingSupply(results[1] || "");
-				setBlocks(results[2] || []);
+				setBlocks(results[2]?.items || []);
 				setLoading(false);
 			})
 	}, []);

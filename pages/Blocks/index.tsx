@@ -11,7 +11,7 @@ import {siteName, formatValue} from '../../utils/constants';
 import styles from './Blocks.module.css';
 import statscardStyles from '../../components/statscard/Statscard.module.scss';
 import algosdk from 'algosdk';
-import { ellipseAddress } from '../../utils/stringUtils';
+import { ellipseAddress, integerFormatter, microAlgosToAlgos } from '../../utils/stringUtils';
 import Table from '../../components/table';
 
 const Blocks = (props) => {
@@ -56,7 +56,7 @@ const Blocks = (props) => {
 			// Use current round number to retrieve last 25 blocks
 			console.log("current round: ", resp)
 			setCurrentRound(resp.data.round);
-			setRewardRate(algosdk.microalgosToAlgos(resp.data.rewards["rewards-rate"]));
+			setRewardRate(microAlgosToAlgos(resp.data.rewards["rewards-rate"]));
 			setLoading(false);
 			axios({
 				method: 'get',
@@ -117,7 +117,7 @@ const Blocks = (props) => {
 			<div className={statscardStyles["cardcontainer"]}>
 				<Statscard
 					stat="Latest Block"
-					value={loading ? <Load /> : formatValue(currentRound)}
+					value={loading ? <Load /> : integerFormatter.format(currentRound)}
 				/>
 				<Statscard
 					stat="Average Block Time"

@@ -10,7 +10,7 @@ export function ellipseAddress(address = "", width = 6): string {
 
 export function microAlgosToAlgos(microAlgos) {
     return Number.isSafeInteger(microAlgos) ? 
-        microAlgos/1e6
+        (microAlgos/1e6).toFixed(2)
         : new BigNumber(microAlgos).dividedBy(1e6).toNumber();
 }
 
@@ -36,6 +36,10 @@ export function timeAgoLocale(diff: number, index: number, totalSec: number): [s
     ][index] as [string, string];
 };
 
-export const currencyFormatter = new Intl.NumberFormat('en-US');
+export const currencyFormatter = new Intl.NumberFormat('en-US', {
+  maximumFractionDigits: 2
+});
 
-export const integerFormatter = new Intl.NumberFormat('en-US');
+export const integerFormatter = new Intl.NumberFormat('en-US', {
+  maximumFractionDigits: 2
+});

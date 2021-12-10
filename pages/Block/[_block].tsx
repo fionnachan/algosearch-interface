@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import moment from 'moment';
+import { useRouter } from 'next/router';
+import Link from 'next/link';
 import Layout from '../../components/layout';
 import Breadcrumbs from '../../components/breadcrumbs';
 import ReactTable from 'react-table-6';
@@ -9,22 +11,23 @@ import AlgoIcon from '../../components/algoicon';
 import Load from '../../components/tableloading';
 import {formatValue, siteName} from '../../utils/constants';
 import styles from './Block.module.css';
-import { useRouter } from 'next/router';
-import Link from 'next/link';
+import { integerFormatter, microAlgosToAlgos, removeSpace } from '../../utils/stringUtils';
 
-const Block = () => {
+const Block = (props) => {
 	const router = useRouter();
-	const { _blocknum } = router.query;
-	const [blocknum, setBlocknum] = useState(0);
+	const { _block } = router.query;
+	const [blockNum, setBlockNum] = useState(0);
 	const [data, setData] = useState([]);
 	const [transactions, setTransactions] = useState([]);
 	const [loading, setLoading] = useState(true);
 
 	const getBlock = blockNum => {
+    console.log("IN HERE")
 		axios({
-			type: 'get',
-			url: `${siteName}/blockservice/${blockNum}`
+			method: 'get',
+			url: `${siteName}/v1/algod/rounds/${blockNum}`
 		}).then(response => {
+      console.log("block: ", response.data)
 			setData(response.data);
 			setTransactions(response.data.transactions);
 			setLoading(false);
@@ -34,28 +37,35 @@ const Block = () => {
 	}
 
 	useEffect(() => {
-		document.title=`AlgoSearch | Block ${blocknum}`;
-		setBlocknum(blocknum);
-		getBlock(blocknum);
-	}, []);
+		console.log("_block: ",_block)
+    if (!_block) {
+      return;
+    }
+		document.title=`AlgoSearch | Block ${_block}`;
+		getBlock(_block);
+		setBlockNum(Number(_block));
+	}, [_block]);
 
 	const columns = [
-		{Header: 'Round', accessor: 'confirmed-round', Cell: props => <Link href={`/block/${props.value}`}>{props.value}</Link>},
+		{Header: 'Block', accessor: 'confirmed-round', Cell: ({value}) => {
+			const _value = removeSpace(value.toString());
+			return <Link href={`/block/${_value}`}>{integerFormatter.format(Number(_value))}</Link>
+		}},
 		{Header: 'TX ID', accessor: 'id', Cell: props => <Link href={`/tx/${props.value}`}>{props.value}</Link>},
 		{Header: 'Type', accessor: 'tx-type', Cell: props => <span className="type noselect">{props.value}</span>},
 		{Header: 'From', accessor: 'sender', Cell: props => <Link href={`/address/${props.value}`}>{props.value}</Link>},
 		{Header: 'To', accessor: 'payment-transaction.receiver', Cell: props => <Link href={`/address/${props.value}`}>{props.value}</Link>},
-		{Header: 'Amount', accessor: 'payment-transaction.amount', Cell: props => <span>{formatValue(props.value/1000000)} <AlgoIcon /></span>},
-		{Header: 'Fee', accessor: 'fee', Cell: props => <span>{formatValue(props.value/1000000)} <AlgoIcon /></span>}
+		{Header: 'Amount', accessor: 'payment-transaction.amount', Cell: props => <span><AlgoIcon /> {microAlgosToAlgos(props.value)}</span>},
+		{Header: 'Fee', accessor: 'fee', Cell: props => <span><AlgoIcon /> {microAlgosToAlgos(props.value)}</span>}
 	];
 
 	return (
 		<Layout>
 			<Breadcrumbs
-				name={`Block #${blocknum}`}
+				name={`Block #${blockNum}`}
 				parentLink="/blocks"
 				parentLinkName="Blocks"
-				currentLinkName={`Block #${blocknum}`}
+				currentLinkName={`Block #${blockNum}`}
 			/>
 			<div className="block-table">
 				<span>Block Overview</span>
@@ -70,7 +80,7 @@ const Block = () => {
 						<tbody>
 							<tr>
 								<td>Round</td>
-								<td>{blocknum}</td>
+								<td>{blockNum}</td>
 							</tr>
 							<tr>
 								<td>Proposer</td>
@@ -82,7 +92,7 @@ const Block = () => {
 							</tr>
 							<tr>
 								<td>Previous block hash</td>
-								<td>{loading ? <Load/> : (<Link href={`/block/${parseInt(blocknum) - 1}`}>{data['previous-block-hash']}</Link>)}</td>
+								<td>{loading ? <Load/> : (<Link href={`/block/${parseInt(blockNum) - 1}`}>{data['previous-block-hash']}</Link>)}</td>
 							</tr>
 							<tr>
 								<td>Seed</td>

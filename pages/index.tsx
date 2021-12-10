@@ -10,7 +10,6 @@ import AlgoIcon from '../components/algoicon';
 import Statscard from '../components/statscard';
 import Load from '../components/tableloading';
 import styles from './Home.module.css';
-import { getAlgodClient } from '../utils/algorand';
 import { currencyFormatter, ellipseAddress, integerFormatter, microAlgosToAlgos, removeSpace, timeAgoLocale } from '../utils/stringUtils';
 import { BigNumber } from 'bignumber.js';
 import Button from '@mui/material/Button';
@@ -26,8 +25,6 @@ const Home = (props) => {
 	const [price, setPrice] = useState(0);
 	const [circulatingSupply, setCirculatingSupply] = useState("");
 	const [ledger, setLedger] = useState({});
-
-	const algod = getAlgodClient();
 
 	timeago.register('en_short', timeAgoLocale);
 
@@ -84,17 +81,19 @@ const Home = (props) => {
 
 	useEffect(() => {
 		document.title="AlgoSearch (ALGO) Blockchain Explorer";
-		algod.supply().do()
-			.then(results => {
-				const _results = {
-					"current_round": integerFormatter.format(results.current_round),
-					"online-money": currencyFormatter.format(microAlgosToAlgos(results["online-money"]))
-				}
-				setLedger(_results);
-			})
-			.catch(error => {
-				console.error("Error when retrieving ledger supply from Algod: " + error);
-			});
+    axios({
+      method: 'get',
+      url: `${siteName}/v1/algod/ledger/supply`
+    }).then(response => {
+      const _onlineMoney = Number(microAlgosToAlgos(response.data["online-money"]));
+      const _results = {
+        "current_round": integerFormatter.format(response.data.current_round),
+        "online-money": currencyFormatter.format(_onlineMoney)
+      }
+      setLedger(_results);
+    }).catch(error => {
+      console.error("Error when retrieving ledger supply from Algod: " + error);
+    })
 
 		Promise.all([getPrice(), getCirculatingSupply(), getLatest()])
 			.then((results) => {

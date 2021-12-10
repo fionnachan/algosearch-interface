@@ -1,6 +1,4 @@
 import React from 'react';
-import Image from 'next/image';
-import { algodurl } from '../../utils/constants';
 import styles from './HomeHeader.module.scss';
 
 const HomeHeader = () => {

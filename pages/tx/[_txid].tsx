@@ -9,12 +9,13 @@ import AlgoIcon from '../../components/algoicon';
 import {formatValue, siteName} from '../../utils/constants';
 import styles from './Transaction.module.css';
 import { useRouter } from 'next/router';
+import { integerFormatter, removeSpace } from '../../utils/stringUtils';
 
 const Transaction = (props) => {
 	const router = useRouter();
 	const { _txid } = router.query;
 	const [txid, setTxid] = useState("");
-	const [transaction, setTransaction] = useState([]);
+	const [transaction, setTransaction] = useState({});
 	const [loading, setLoading] = useState(true);
 
 	const getTransaction = txid => {
@@ -39,7 +40,7 @@ const Transaction = (props) => {
 			return;
 		}
 		setTxid(_txid.toString());
-		getTransaction(txid);
+		getTransaction(_txid);
 	}, [_txid]);
 
 	return (
@@ -53,7 +54,7 @@ const Transaction = (props) => {
 			<div className={styles["block-table"]}>
 				<span>Transaction Details</span>
 				<div>
-					<table cellSpacing="0">
+        transaction && <table cellSpacing="0">
 						<thead>
 							<tr>
 								<th>Identifier</th>
@@ -63,29 +64,29 @@ const Transaction = (props) => {
 						<tbody>
 							<tr>
 								<td>ID</td>
-								<td>{loading ? <Load /> : transaction.transaction.id}</td>
+								<td>{loading ? <Load /> : transaction.id}</td>
 							</tr>
 							<tr>
 								<td>Round</td>
-								<td>{loading ? <Load /> : <Link href={`/block/${transaction.transaction['comfirmed-round']}`}>{transaction.transaction['confirmed-round']}</Link>}</td>
+								<td>{loading ? <Load /> : <Link href={`/block/${removeSpace(transaction['confirmed-round'].toString())}`}>{integerFormatter.format(Number(removeSpace(transaction['confirmed-round'].toString())))}</Link>}</td>
 							</tr>
 							<tr>
 								<td>Type</td>
-								<td>{loading ? <Load /> : <span className="type noselect">{transaction.transaction['tx-type']}</span>}</td>
+								<td>{loading ? <Load /> : <span className="type noselect">{transaction['tx-type']}</span>}</td>
 							</tr>
 							<tr>
 								<td>Sender</td>
-								<td>{loading ? <Load /> : <Link href={`/address/${transaction.transaction.sender}`}>{transaction.transaction.sender}</Link>}</td>
+								<td>{loading ? <Load /> : <Link href={`/address/${transaction.sender}`}>{transaction.sender}</Link>}</td>
 							</tr>
 							<tr>
 								<td>Receiver</td>
-								<td>{loading ? <Load /> : <Link href={`/address/${transaction.transaction['payment-transaction'].receiver}`}>{transaction.transaction['payment-transaction'].receiver}</Link>}</td>
+								<td>{loading ? <Load /> : <Link href={`/address/${transaction['payment-transaction'].receiver}`}>{transaction['payment-transaction'].receiver}</Link>}</td>
 							</tr>
 							<tr>
 								<td>Amount</td>
 								<td>{loading ? <Load /> : (
 									<div className="tx-hasicon">
-										{formatValue(transaction.transaction['payment-transaction'].amount / 1000000)}
+										{formatValue(transaction['payment-transaction'].amount / 1000000)}
 										<AlgoIcon />
 									</div>
 								)}</td>
@@ -94,18 +95,18 @@ const Transaction = (props) => {
 								<td>Fee</td>
 								<td>{loading ? <Load /> : (
 									<div className="tx-hasicon">
-										{formatValue(transaction.transaction.fee / 1000000)}
+										{formatValue(transaction.fee / 1000000)}
 										<AlgoIcon />
 									</div>
 								)}</td>
 							</tr>
 							<tr>
 								<td>First round</td>
-								<td>{loading ? <Load /> : <Link href={`/block/${transaction.transaction["first-valid"]}`}>{transaction.transaction["first-valid"]}</Link>}</td>
+								<td>{loading ? <Load /> : <Link href={`/block/${removeSpace(transaction["first-valid"].toString())}`}>{integerFormatter.format(Number(removeSpace(transaction["first-valid"].toString())))}</Link>}</td>
 							</tr>
 							<tr>
 								<td>Last round</td>
-								<td>{loading ? <Load /> : <Link href={`/block/${transaction.transaction["last-valid"]}`}>{transaction.transaction["last-valid"]}</Link>}</td>
+								<td>{loading ? <Load /> : <Link href={`/block/${removeSpace(transaction["last-valid"].toString())}`}>{integerFormatter.format(Number(removeSpace(transaction["last-valid"].toString())))}</Link>}</td>
 							</tr>
 							<tr>
 								<td>Timestamp</td>
@@ -116,15 +117,15 @@ const Transaction = (props) => {
 								<td>
 									{loading ? <Load /> : (
 										<div>
-											{transaction.transaction.note && transaction.transaction.note !== '' ? (
+											{transaction.note && transaction.note !== '' ? (
 												<div>
 													<div>
 														<span>Base 64:</span>
-														<textarea defaultValue={transaction.transaction.note} readOnly></textarea>
+														<textarea defaultValue={transaction.note} readOnly></textarea>
 													</div>
 													<div>
 														<span>Converted:</span>
-														<textarea defaultValue={atob(transaction.transaction.note)} readOnly></textarea>
+														<textarea defaultValue={atob(transaction.note)} readOnly></textarea>
 													</div>
 												</div>
 											) : null}
@@ -151,7 +152,7 @@ const Transaction = (props) => {
 								<td>From rewards</td>
 								<td>{loading ? <Load /> : (
 									<div className="tx-hasicon">
-										{formatValue(transaction.transaction['sender-rewards'] / 1000000)}
+										{formatValue(transaction['sender-rewards'] / 1000000)}
 										<AlgoIcon />
 									</div>
 								)}</td>
@@ -160,18 +161,18 @@ const Transaction = (props) => {
 								<td>To rewards</td>
 								<td>{loading ? <Load /> : (
 									<div className="tx-hasicon">
-										{formatValue(transaction.transaction['receiver-rewards'] / 1000000)}
+										{formatValue(transaction['receiver-rewards'] / 1000000)}
 										<AlgoIcon />
 									</div>
 								)}</td>
 							</tr>
 							<tr>
 								<td>Genesis ID</td>
-								<td>{loading ? <Load /> : transaction.transaction['genesis-id']}</td>
+								<td>{loading ? <Load /> : transaction['genesis-id']}</td>
 							</tr>
 							<tr>
 								<td>Genesis hash</td>
-								<td>{loading ? <Load /> : transaction.transaction['genesis-hash']}</td>
+								<td>{loading ? <Load /> : transaction['genesis-hash']}</td>
 							</tr>
 						</tbody>
 					</table>

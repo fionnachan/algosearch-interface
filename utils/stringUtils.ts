@@ -8,7 +8,7 @@ export function ellipseAddress(address = "", width = 6): string {
     return `${address.slice(0, width)}...${address.slice(-width)}`;
 }
 
-export function microAlgosToAlgos(microAlgos) {
+export function microAlgosToAlgos(microAlgos: number) : string | number {
     return Number.isSafeInteger(microAlgos) ? 
         (microAlgos/1e6).toFixed(2)
         : new BigNumber(microAlgos).dividedBy(1e6).toNumber();

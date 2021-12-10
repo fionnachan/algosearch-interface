@@ -80,11 +80,11 @@ const Transactions = (props) => {
 
 	// Table columns
 	const columns = [
-		{Header: 'Round', accessor: 'confirmed-round', Cell: ({value}) => {
+		{Header: 'Block', accessor: 'confirmed-round', Cell: ({value}) => {
 			const _value = removeSpace(value.toString());
 			return <Link href={`/block/${_value}`}>{integerFormatter.format(Number(_value))}</Link>
 		}},
-		{Header: 'TX ID', accessor: 'id', Cell: props => <Link href={`/tx/${props.value}`}>{ellipseAddress(props.value)}</Link>},
+		{Header: 'Tx id', accessor: 'id', Cell: props => <Link href={`/tx/${props.value}`}>{ellipseAddress(props.value)}</Link>},
 		{Header: 'Type', accessor: 'tx-type', Cell: props => <span className="type noselect">{props.value}</span>},
 		{Header: 'From', accessor: 'sender', Cell: props => <Link href={`/address/${props.value}`}>{ellipseAddress(props.value)}</Link>},
 		{Header: 'To', accessor: 'payment-transaction.receiver', Cell: props => <Link href={`/address/${props.value}`}>{ellipseAddress(props.value)}</Link>},

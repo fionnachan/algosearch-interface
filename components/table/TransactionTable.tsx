@@ -1,27 +1,47 @@
+import axios from 'axios';
 import moment from 'moment';
 import Link from 'next/link';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import TimeAgo from 'timeago-react';
-import { getAlgodClient } from '../../utils/algorand';
+import {siteName} from '../../utils/constants';
 import { ellipseAddress, microAlgosToAlgos } from '../../utils/stringUtils';
 import AlgoIcon from '../algoicon';
 import styles from './TransactionTable.module.scss';
 
 const TransactionTable = ({transactions}) => {
-  const algod = getAlgodClient();
+  const [asaList, setAsaList] = useState([]);
+
+  useEffect(() => {
+    async function getAsas() {
+      const _asaList =await Promise.all(transactions.map(async (tx) => {
+        if (tx['tx-type'] === 'axfer') {
+          const asa_id = tx['asset-transfer-transaction']['asset-id'];          
+          return await axios({
+            method: 'get',
+            url: `${siteName}/v1/algod/assets/${asa_id}`
+          }).then(response => {
+            console.log("asa unit name?", response.data.params["unit-name"])
+            return response.data.params["unit-name"];
+            // console.log("asa? ", response.data.params)
+          }).catch(error => {
+            console.error("Error when retrieving Algorand ASA");
+          })
+        } else {
+          return null;
+        }
+      }))
+      setAsaList(_asaList);
+      console.log("_asalist: ", _asaList)
+    }
+    getAsas();
+  }, []);
+
   return (
     <div className={styles['transaction-table']}>
       {
-        transactions.map(tx => {
+        transactions.map((tx, index) => {
           const _receiver = tx['payment-transaction'].receiver || tx.sender;
-          let _asaUnit = "";
-          // if (tx['tx-type'] === 'axfer') {
-          //   algod.getAssetByID(tx['asset-transfer-transaction']['asset-id']).do()
-          //     .then(results => {
-          //       console.log("asa? ", results)
-          //     })
-          // }
-
+          let _asaUnit = asaList[index];
           
           // * (pay) payment-transaction
           // * (keyreg) keyreg-transaction
@@ -51,7 +71,7 @@ const TransactionTable = ({transactions}) => {
                   <span>
                     {
                       tx['tx-type'] === 'axfer' ?
-                        `${tx['asset-transfer-transaction'].amount} ASA id ${tx['asset-transfer-transaction']['asset-id']}`
+                        `${microAlgosToAlgos(tx['asset-transfer-transaction'].amount)} ${_asaUnit}`
                         : <>
                           <AlgoIcon /> {microAlgosToAlgos(tx['payment-transaction'].amount)}
                         </>

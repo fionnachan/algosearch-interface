@@ -12,38 +12,47 @@ import ReactTable from 'react-table-6';
 import 'react-table-6/react-table.css';
 import styles from './Address.module.css';
 import statcardStyles from '../../components/statscard/Statscard.module.scss';
-import { getAlgodClient } from '../../utils/algorand';
+import { integerFormatter, microAlgosToAlgos, removeSpace } from '../../utils/stringUtils';
+import TimeAgo from 'timeago-react';
 
 const Address = (props) => {
 	const router = useRouter();
 	const { _address } = router.query;
 	const [address, setAddress] = useState("");
+  const [accountTxNum, setAccountTxNum] = useState(0);
+  const [accountTxns, setAccountTxns] = useState([]);
 	const [data, setData] = useState({});
 	const [txData, setTxData] = useState({});
 	const [loading, setLoading] = useState(true);
-	const algod = getAlgodClient();
 
 	const getAddressData = address => {
-		algod.accountInformation(address)
-			.do()
-			.then(response => {
-				console.log("address: ",response)
-				setData(response);
-				setLoading(false);
-			})
-			.catch(error => {
-				console.error("Exception when querying for address information: " + error);
-			});
-    // axios({
-    //   method: 'get',
-    //   url: `${siteName}/transactions/acct/${address}?page=1&limit=10&order=desc`
-    // }).then(response => {
-    //   console.log("address data: ", response.data);
-    // })
-    // .catch(error => {
-    //   console.error("Exception when querying for address information: " + error);
-    // });
+    axios({
+      method: 'get',
+      url: `${siteName}/v1/accounts/${address}?page=1&limit=10&order=desc`
+    }).then(response => {
+      console.log("address data: ", response.data);
+      setData(response.data);
+      setLoading(false);
+    })
+    .catch(error => {
+      console.error("Exception when querying for address information: " + error);
+    });
 	};
+
+  const getAccountTx = address => {
+    axios({
+      method: 'get',
+      url: `${siteName}/v1/transactions/acct/${address}?page=1&limit=25`
+    }).then(response => {
+      console.log("account txns data: ", response.data);
+      setAccountTxNum(response.data.num_of_txns);
+      setAccountTxns(response.data.items);
+      setLoading(false);
+    })
+    .catch(error => {
+      console.error("Exception when querying for address transactions: " + error);
+    });
+  }
 
 	useEffect(() => {
 		if (!_address) {
@@ -53,23 +62,28 @@ const Address = (props) => {
 		setAddress(_address.toString());
 		document.title=`AlgoSearch | Address ${address}`;
 		getAddressData(_address);
+    getAccountTx(_address);
 	}, [_address]);
 
 	const columns = [
 		{Header: '#', accessor: 'confirmed-round', Cell: props => <span className="rownumber">{props.index + 1}</span>},
-		{Header: 'Round', accessor: 'confirmed-round', Cell: props => <Link href={`/block/${props.value}`}>{props.value}</Link>},
-		{Header: 'TX ID', accessor: 'id', Cell: props => <Link href={`/tx/${props.value}`}>{props.value}</Link>},
+		
+		{Header: 'Block', accessor: 'confirmed-round', Cell: ({value}) => {
+			const _value = removeSpace(value.toString());
+			return <Link href={`/block/${_value}`}>{integerFormatter.format(Number(_value))}</Link>
+		}},
+		{Header: 'Tx id', accessor: 'id', Cell: props => <Link href={`/tx/${props.value}`}>{props.value}</Link>},
 		{Header: 'From', accessor: 'sender', Cell: props => address === props.value ? <span className="nocolor">{props.value}</span> : <Link href={`/address/${props.value}`}>{props.value}</Link>},
-		{Header: '', accessor: 'from', Cell: props => address === props.value ? <span className="type noselect">OUT</span> : <span className="type type-width-in noselect">IN</span>},
+		{Header: '', accessor: 'sender', Cell: props => address === props.value ? <span className="type noselect">OUT</span> : <span className="type type-width-in noselect">IN</span>},
 		{Header: 'To', accessor: 'payment-transaction.receiver', Cell: props => address === props.value ? <span className="nocolor">{props.value}</span> : <Link href={`/address/${props.value}`}>{props.value}</Link>},
-		{Header: 'Amount', accessor: 'payment-transaction.amount', Cell: props => <span>{formatValue(props.value / 1000000)} <AlgoIcon /></span>},
-		{Header: 'Time', accessor: 'timestamp', Cell: props=> <span className="nocolor">{moment.unix(props.value).fromNow()}</span>}
+		{Header: 'Amount', accessor: 'payment-transaction.amount', Cell: props => <span><AlgoIcon /> {microAlgosToAlgos(props.value)}</span>},
+		{Header: 'Time', accessor: 'round-time', Cell: props=> <span className="nocolor"><TimeAgo datetime={new Date(moment.unix(props.value)._d)} locale="en_short"/></span>}
 	];
 
 	return (
 		<Layout data={{
 			"address": address,
-			"balance": formatValue(data['amount-without-pending-rewards'] / 1000000)
+			"balance": microAlgosToAlgos(data['amount-without-pending-rewards'])
 		}}
 		addresspage>
 			<div className={`${statcardStyles["cardcontainer"]} ${statcardStyles["address-cards"]}`}>
@@ -77,8 +91,7 @@ const Address = (props) => {
 					stat="Rewards"
 					value={loading ? <Load /> : (
 						<div>
-							{formatValue(data.rewards / 1000000)}
-							<AlgoIcon />
+              <AlgoIcon /> {microAlgosToAlgos(data.rewards)}
 						</div>
 					)}
 				/>
@@ -86,8 +99,7 @@ const Address = (props) => {
 					stat="Pending rewards"
 					value={loading ? <Load /> : (
 						<div>
-							{formatValue(data['pending-rewards'] / 1000000)}
-							<AlgoIcon />
+              <AlgoIcon /> {microAlgosToAlgos(data['pending-rewards'])}
 						</div>
 					)}
 				/>
@@ -102,10 +114,10 @@ const Address = (props) => {
 				/>
 			</div>
 			<div className="block-table addresses-table">
-				<span>Latest {loading || !data.confirmed_transactions ? 0 : data.confirmed_transactions.length} transactions {loading !== true && data.confirmed_transactions && data.confirmed_transactions.length > 24 && <Link href={`/addresstx/${address}`}>View more</Link> }</span>
+				<span>Latest {loading || !accountTxns ? 0 : accountTxns.length} transactions {loading !== true && accountTxns && accountTxns.length > 24 && <Link href={`/addresstx/${address}`}>View more</Link> }</span>
 				<div>
 					<ReactTable
-						data={data.confirmed_transactions}
+						data={accountTxns}
 						columns={columns}
 						loading={loading}
 						defaultPageSize={25}

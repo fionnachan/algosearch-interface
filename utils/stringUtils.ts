@@ -1,4 +1,6 @@
 import BigNumber from "bignumber.js";
+import * as timeago from "timeago.js";
+import moment from "moment-timezone";
 
 export function removeSpace(text: string) {
     return text.replace(" ", "");
@@ -14,10 +16,16 @@ export function microAlgosToAlgos(microAlgos: number) : string | number {
         : new BigNumber(microAlgos).dividedBy(1e6).toNumber();
 }
 
-export function timeAgoLocale(diff: number, index: number, totalSec: number): [string, string] {
+export const timeAgoLocale: timeago.LocaleFunc = (diff, index, totalSec) => {
     // diff: the time ago / time in number;
     // index: the index of array below;
     // totalSec: total seconds between date to be formatted and today's date;
+    const tz = Intl.DateTimeFormat().resolvedOptions().timeZone;
+    let datetime = "";
+    if (index >= 12) {
+      const timestampNow = new Date().getTime()
+      datetime = moment.tz(new Date(timestampNow - (totalSec??0)*1000), tz).format("D MMM YYYY, hh:mmA z");
+    }
     return [
       ['just now', 'right now'],
       ['%s secs ago', 'in %s secs'],
@@ -31,8 +39,8 @@ export function timeAgoLocale(diff: number, index: number, totalSec: number): [s
       ['%s weeks ago', 'in %s weeks'],
       ['1 month ago', 'in 1 month'],
       ['%s months ago', 'in %s months'],
-      ['1 year ago', 'in 1 year'],
-      ['%s years ago', 'in %s years']
+      [`${datetime}`, `${datetime}`],
+      [`${datetime}`, `${datetime}`],
     ][index] as [string, string];
 };
 

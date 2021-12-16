@@ -1,6 +1,4 @@
-import algosdk from "algosdk";
-
-export function formatValue(number) {
+export function formatValue(number: number) {
 	return number;
 }
 

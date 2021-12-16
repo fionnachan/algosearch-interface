@@ -1,20 +1,25 @@
 .home-split {
-	display: flex;
-	justify-content: space-between;
-	width: 100%;
-	text-align: center;
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  text-align: center;
 }
 
 .block-table {
-	display: inline-block;
-	flex: 0 0 49%;
-	padding-top: 20px;
-	vertical-align: top;
-	text-align: left;
+  display: inline-block;
+  flex: 0 0 49%;
+  padding-top: 20px;
+  vertical-align: top;
+  text-align: left;
 }
 
 .block-table > div {
-	display: flex;
-	justify-content: space-between;
-	align-items: center;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.home-cards {
+  display: flex;
+  gap: var(--space-m);
 }

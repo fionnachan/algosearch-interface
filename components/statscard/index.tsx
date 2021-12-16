@@ -1,13 +1,13 @@
-import React from 'react';
-import styles from './Statscard.module.scss';
+import React from "react";
+import styles from "./Statscard.module.scss";
 
-const Statscard = (props) => {
-	return (
-		<div className={styles.statscard}>
-			<h2>{props.stat}</h2>
-			{props.value}
-		</div>
-	);
-}
+const Statscard = ({ stat, value }: { stat: string; value: JSX.Element }) => {
+  return (
+    <div className={styles.statscard}>
+      <h2>{stat}</h2>
+      {value}
+    </div>
+  );
+};
 
 export default Statscard;

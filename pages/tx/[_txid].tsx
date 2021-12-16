@@ -1,185 +1,91 @@
-import React, { useEffect, useState } from 'react';
-import axios from 'axios';
-import moment from 'moment';
-import Link from 'next/link';
-import Layout from '../../components/layout';
-import Breadcrumbs from '../../components/breadcrumbs';
-import Load from '../../components/tableloading';
-import AlgoIcon from '../../components/algoicon';
-import {formatValue, siteName} from '../../utils/constants';
-import styles from './Transaction.module.css';
-import { useRouter } from 'next/router';
-import { integerFormatter, removeSpace } from '../../utils/stringUtils';
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+import Layout from "../../components/layout";
+import Breadcrumbs from "../../components/breadcrumbs";
+import Load from "../../components/tableloading";
+import { siteName } from "../../utils/constants";
+import styles from "./Transaction.module.css";
+import { useRouter } from "next/router";
+import { TxType } from "../../components/table/TransactionTable";
+import TransactionDetails from "./TransactionDetails";
 
-const Transaction = (props) => {
-	const router = useRouter();
-	const { _txid } = router.query;
-	const [txid, setTxid] = useState("");
-	const [transaction, setTransaction] = useState({});
-	const [loading, setLoading] = useState(true);
+export type TransactionResponse = {
+  id: number;
+  "genesis-id": number;
+  "genesis-hash": string;
+  "confirmed-round": number;
+  "tx-type": TxType;
+  sender: string;
+  "sender-rewards": number;
+  "receiver-rewards": number;
+  "payment-transaction": {
+    amount: number;
+    receiver: string;
+  };
+  "asset-transfer-transaction": {
+    "asset-id": number;
+    amount: number;
+  };
+  fee: number;
+  "round-time": number;
+  "first-valid": number;
+  "last-valid": number;
+  timestamp: number;
+  note: string;
+};
 
-	const getTransaction = txid => {
-		axios({
-			method: 'get',
-			url: `${siteName}/v1/transactions/${txid}`
-		}).then(response => {
-			console.log("transaction id data: ", response.data)
-			setTransaction(response.data);
-			setLoading(false);
-		}).catch(error => {
-			console.log("Exception when retrieving transaction details: " + error);
-		})
-	};
+const Transaction = () => {
+  const router = useRouter();
+  const { _txid } = router.query;
+  const [txid, setTxid] = useState("");
+  const [transaction, setTransaction] = useState<TransactionResponse>();
+  const [loading, setLoading] = useState(true);
 
-	useEffect(() => {
-		document.title=`AlgoSearch | Transaction ${txid}`;
-	}, []);
+  const getTransaction = (txid: string) => {
+    axios({
+      method: "get",
+      url: `${siteName}/v1/transactions/${txid}`,
+    })
+      .then((response) => {
+        console.log("transaction id data: ", response.data);
+        setTransaction(response.data);
+        setLoading(false);
+      })
+      .catch((error) => {
+        console.log("Exception when retrieving transaction details: " + error);
+      });
+  };
 
-	useEffect(() => {
-		if (!_txid) {
-			return;
-		}
-		setTxid(_txid.toString());
-		getTransaction(_txid);
-	}, [_txid]);
+  useEffect(() => {
+    document.title = `AlgoSearch | Transaction ${txid}`;
+  }, []);
 
-	return (
-		<Layout>
-			<Breadcrumbs
-				name={`Transaction Details`}
-				parentLink="/transactions"
-				parentLinkName="Transactions"
-				currentLinkName={`Transaction Details`}
-			/>
-			<div className={styles["block-table"]}>
-				<span>Transaction Details</span>
-				<div>
-        transaction && <table cellSpacing="0">
-						<thead>
-							<tr>
-								<th>Identifier</th>
-								<th>Value</th>
-							</tr>
-						</thead>
-						<tbody>
-							<tr>
-								<td>ID</td>
-								<td>{loading ? <Load /> : transaction.id}</td>
-							</tr>
-							<tr>
-								<td>Round</td>
-								<td>{loading ? <Load /> : <Link href={`/block/${removeSpace(transaction['confirmed-round'].toString())}`}>{integerFormatter.format(Number(removeSpace(transaction['confirmed-round'].toString())))}</Link>}</td>
-							</tr>
-							<tr>
-								<td>Type</td>
-								<td>{loading ? <Load /> : <span className="type noselect">{transaction['tx-type']}</span>}</td>
-							</tr>
-							<tr>
-								<td>Sender</td>
-								<td>{loading ? <Load /> : <Link href={`/address/${transaction.sender}`}>{transaction.sender}</Link>}</td>
-							</tr>
-							<tr>
-								<td>Receiver</td>
-								<td>{loading ? <Load /> : <Link href={`/address/${transaction['payment-transaction'].receiver}`}>{transaction['payment-transaction'].receiver}</Link>}</td>
-							</tr>
-							<tr>
-								<td>Amount</td>
-								<td>{loading ? <Load /> : (
-									<div className="tx-hasicon">
-										{formatValue(transaction['payment-transaction'].amount / 1000000)}
-										<AlgoIcon />
-									</div>
-								)}</td>
-							</tr>
-							<tr>
-								<td>Fee</td>
-								<td>{loading ? <Load /> : (
-									<div className="tx-hasicon">
-										{formatValue(transaction.fee / 1000000)}
-										<AlgoIcon />
-									</div>
-								)}</td>
-							</tr>
-							<tr>
-								<td>First round</td>
-								<td>{loading ? <Load /> : <Link href={`/block/${removeSpace(transaction["first-valid"].toString())}`}>{integerFormatter.format(Number(removeSpace(transaction["first-valid"].toString())))}</Link>}</td>
-							</tr>
-							<tr>
-								<td>Last round</td>
-								<td>{loading ? <Load /> : <Link href={`/block/${removeSpace(transaction["last-valid"].toString())}`}>{integerFormatter.format(Number(removeSpace(transaction["last-valid"].toString())))}</Link>}</td>
-							</tr>
-							<tr>
-								<td>Timestamp</td>
-								<td>{loading ? <Load /> : moment.unix(transaction.timestamp).format("LLLL")}</td>
-							</tr>
-							<tr>
-								<td>Note</td>
-								<td>
-									{loading ? <Load /> : (
-										<div>
-											{transaction.note && transaction.note !== '' ? (
-												<div>
-													<div>
-														<span>Base 64:</span>
-														<textarea defaultValue={transaction.note} readOnly></textarea>
-													</div>
-													<div>
-														<span>Converted:</span>
-														<textarea defaultValue={atob(transaction.note)} readOnly></textarea>
-													</div>
-												</div>
-											) : null}
-										</div>
-									)}
-								</td>
-							</tr>
-						</tbody>
-					</table>
-				</div>
-			</div>
-			<div className="block-table">
-				<span>Miscellaneous Details</span>
-				<div>
-					<table cellSpacing="0">
-						<thead>
-							<tr>
-								<th>Identifier</th>
-								<th>Value</th>
-							</tr>
-						</thead>
-						<tbody>
-							<tr>
-								<td>From rewards</td>
-								<td>{loading ? <Load /> : (
-									<div className="tx-hasicon">
-										{formatValue(transaction['sender-rewards'] / 1000000)}
-										<AlgoIcon />
-									</div>
-								)}</td>
-							</tr>
-							<tr>
-								<td>To rewards</td>
-								<td>{loading ? <Load /> : (
-									<div className="tx-hasicon">
-										{formatValue(transaction['receiver-rewards'] / 1000000)}
-										<AlgoIcon />
-									</div>
-								)}</td>
-							</tr>
-							<tr>
-								<td>Genesis ID</td>
-								<td>{loading ? <Load /> : transaction['genesis-id']}</td>
-							</tr>
-							<tr>
-								<td>Genesis hash</td>
-								<td>{loading ? <Load /> : transaction['genesis-hash']}</td>
-							</tr>
-						</tbody>
-					</table>
-				</div>
-			</div>
-		</Layout>
-	);
-}
+  useEffect(() => {
+    if (!_txid) {
+      return;
+    }
+    setTxid(_txid.toString());
+    getTransaction(_txid.toString());
+  }, [_txid]);
+
+  return (
+    <Layout>
+      <Breadcrumbs
+        name={`Transaction Details`}
+        parentLink="/transactions"
+        parentLinkName="Transactions"
+        currentLinkName={`Transaction Details`}
+      />
+      <div className={styles["block-table"]}>
+        <span>Transaction Details</span>
+        {transaction ? (
+          <TransactionDetails transaction={transaction} />
+        ) : (
+          <Load />
+        )}
+      </div>
+    </Layout>
+  );
+};
 
 export default Transaction;

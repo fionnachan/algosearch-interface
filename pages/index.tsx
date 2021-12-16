@@ -174,7 +174,7 @@ const Home = () => {
   const block_columns_id = { id: "home-latest-block-sizing" };
 
   return (
-    <Layout genesisId={genesisId} homepage>
+    <Layout homepage>
       <div className={styles["home-cards"]}>
         <Statscard
           stat="Latest Round"

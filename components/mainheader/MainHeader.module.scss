@@ -32,6 +32,9 @@
     margin-right: -1.2px;
     margin-bottom: 2px;
   }
+  &:hover path {
+    fill: var(--blue);
+  }
 }
 
 .menu {
@@ -53,18 +56,16 @@
     font-size: 16px;
     font-weight: 500;
     color: #536d93;
-    text-decoration: none;
     padding: 10px 10px;
-    background-color: #fff;
 
     &:hover {
-      color: #337afe;
+      color: var(--blue);
+    }
+
+    &.active {
+      color: var(--blue) !important;
     }
   }
-}
-
-.active {
-  color: #337afe !important;
 }
 
 .hidden {

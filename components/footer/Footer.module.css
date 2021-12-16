@@ -1,10 +1,11 @@
-.footerItem > div {
-	display: inline-block;
+.footer {
+  display: flex;
+  justify-content: center;
 }
 
 @media screen and (max-width: 700px) {
-	.footerItem > div {
-		width: 80% !important;
-		text-align: left !important;
-	}
+  .footer > div {
+    width: 80% !important;
+    text-align: left !important;
+  }
 }

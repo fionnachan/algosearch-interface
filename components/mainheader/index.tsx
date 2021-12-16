@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from "react";
-import Image from "next/image";
+import { useRouter } from "next/router";
 import Link from "next/link";
 import styles from "./MainHeader.module.scss";
 import HeaderSearch from "../headersearch";
 
 const MainHeader = () => {
   const [open, setOpen] = useState(false);
+  const router = useRouter();
 
   const updateDimensions = (event: UIEvent) => {
     if (window.innerWidth > 950) {
@@ -27,7 +28,7 @@ const MainHeader = () => {
       <div className="sizer">
         <div className={styles.headerLeft}>
           <Link href="/">
-            <div className={styles.logo}>
+            <a className={styles.logo}>
               <svg
                 id="svg"
                 xmlns="http://www.w3.org/2000/svg"
@@ -47,22 +48,39 @@ const MainHeader = () => {
                 </g>
               </svg>
               <span>lgoSearch</span>
-            </div>
+            </a>
             {/* <Image src="/logo.svg" width="160" height="40" /> */}
           </Link>
           <nav className={styles.menu}>
             <ul>
               <li>
-                <Link href="/">Home</Link>
+                <Link href="/blocks">
+                  <a
+                    className={
+                      router.pathname == "/blocks" ? styles.active : ""
+                    }
+                  >
+                    Blocks
+                  </a>
+                </Link>
               </li>
               <li>
-                <Link href="/blocks">Blocks</Link>
+                <Link href="/transactions">
+                  <a
+                    className={
+                      router.pathname == "/transactions" ? styles.active : ""
+                    }
+                  >
+                    Transactions
+                  </a>
+                </Link>
               </li>
               <li>
-                <Link href="/transactions">Transactions</Link>
-              </li>
-              <li>
-                <Link href="/dev">Developer APIs</Link>
+                <Link href="/dev">
+                  <a className={router.pathname == "/dev" ? styles.active : ""}>
+                    Developer APIs
+                  </a>
+                </Link>
               </li>
             </ul>
           </nav>

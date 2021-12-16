@@ -1,16 +1,25 @@
-import React, { useEffect, useState } from "react";
+import React, { ReactChildren, useEffect, useState } from "react";
 import moment from "moment";
 import Head from "next/head";
 import styles from "./Layout.module.css";
 
 import AddressHeader from "../addressheader";
-import HeaderSearch from "../headersearch";
 import MainHeader from "../mainheader";
 import Footer from "../footer";
 import HomeHeader from "./HomeHeader";
 import HomeFooter from "./HomeFooter";
 
-const Layout = (props) => {
+type LayoutPropsType = {
+  addresspage: boolean;
+  data: {
+    balance: number;
+    address: string;
+  };
+  children: ReactChildren;
+  homepage: boolean;
+};
+
+const Layout = ({ addresspage, data, homepage, children }: LayoutPropsType) => {
   const [scroll, setScroll] = useState(false);
 
   useEffect(() => {
@@ -55,24 +64,19 @@ const Layout = (props) => {
         <title>AlgoSearch | Algorand Block Explorer</title>
       </Head>
       <MainHeader />
-      {props.addresspage && (
-        <AddressHeader
-          balance={props.data.balance}
-          address={props.data.address}
-        />
+      {addresspage && (
+        <AddressHeader balance={data.balance} address={data.address} />
       )}
-      {props.homepage && <HomeHeader />}
+      {homepage && <HomeHeader />}
       <div className={styles.content}>
-        <div className="sizer">{props.children}</div>
+        <div className="sizer">{children}</div>
       </div>
-      {props.homepage && (
+      {homepage && (
         <div className={styles.subfooter}>
           <HomeFooter />
         </div>
       )}
-      <div>
-        <Footer />
-      </div>
+      <Footer />
       <button
         className={`${styles.scrolltop} ${scroll ? "" : styles.hiddenscroll}`}
         onClick={scrollToTop}

@@ -1,50 +1,52 @@
 .layout {
-	display: flex;
-	align-items: center;
-	flex-direction: column;
-	width: 100%;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  width: 100%;
+  min-height: 100vh;
 }
 
 .content {
-	position: relative;
-	padding: 40px 20px 80px;
+  position: relative;
+  padding: 40px 20px 80px;
+  flex: 1 0 auto;
 }
 
 .subfooter {
-	width: 100%;
-	background-color: #fafcff;
-	padding: 64px 0px;
-	border-top: 1px solid #e7eaf3;
+  width: 100%;
+  background-color: #fafcff;
+  padding: 64px 0px;
+  border-top: 1px solid #e7eaf3;
 }
 
 .scrolltop {
-	position: fixed;
-	width: 40px !important;
-	height: 40px !important;
-	bottom: 15px;
-	right: 15px;
-	border-radius: 4px;
-	background-color: #337afe;
-	opacity: 0.5;
-	z-index: 9999;
-	display: inline-block;
-	transition: 200ms ease-in-out;
-	color: #fff;
-	border: none;
-	cursor: pointer;
-	font-size: 15px;
-	transform: rotate(-90deg);
+  position: fixed;
+  width: 40px !important;
+  height: 40px !important;
+  bottom: 15px;
+  right: 15px;
+  border-radius: 4px;
+  background-color: #337afe;
+  opacity: 0.5;
+  z-index: 9999;
+  display: inline-block;
+  transition: 200ms ease-in-out;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+  font-size: 15px;
+  transform: rotate(-90deg);
 }
 
 .scrolltop:hover {
-	opacity: 1;
+  opacity: 1;
 }
 
 .scrolltop:focus {
-	outline: none;
+  outline: none;
 }
 
 .hiddenscroll {
-	opacity: 0;
-	visibility: hidden;
+  opacity: 0;
+  visibility: hidden;
 }

@@ -1,6 +1,28 @@
 import axios from "axios";
 import { siteName } from "./constants";
-import { ICurrentRoundResponse } from "../types/apiResponseTypes";
+import { ICurrentRoundResponse, ISupply } from "../types/apiResponseTypes";
+import { currencyFormatter, microAlgosToAlgos } from "./stringUtils";
+
+export const apiGetSupply = async () => {
+  try {
+    const supply = await axios({
+      method: "get",
+      url: `${siteName}/v1/algod/ledger/supply`,
+    });
+    const _onlineMoney = Number(
+      microAlgosToAlgos(supply.data["online-money"])
+    );
+    const _results: ISupply = {
+      current_round: supply.data.current_round,
+      "online-money": currencyFormatter.format(_onlineMoney),
+    };
+    return _results;
+  } catch (error) {
+    console.error(
+      "Error when retrieving ledger supply from Algod: " + error
+    );
+  }
+}
 
 export const apiGetCurrentRound = async () => {
   try {

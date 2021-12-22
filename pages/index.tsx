@@ -5,7 +5,6 @@ import Link from "next/link";
 import TimeAgo from "timeago-react";
 import * as timeago from "timeago.js";
 import Layout from "../components/layout";
-import { formatValue, siteName } from "../utils/constants";
 import AlgoIcon from "../components/algoicon";
 import Statscard from "../components/statscard";
 import Load from "../components/tableloading";
@@ -14,7 +13,6 @@ import {
   currencyFormatter,
   ellipseAddress,
   integerFormatter,
-  microAlgosToAlgos,
   timeAgoLocale,
 } from "../utils/stringUtils";
 import { BigNumber } from "bignumber.js";
@@ -25,8 +23,10 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   getCurrentRound,
   getLatestBlocks,
+  getSupply,
   selectCurrentRound,
   selectLatestBlocks,
+  selectSupply,
 } from "../features/applicationSlice";
 
 const Home = () => {
@@ -36,10 +36,7 @@ const Home = () => {
   const blocks = useSelector(selectLatestBlocks);
   const [price, setPrice] = useState(0);
   const [circulatingSupply, setCirculatingSupply] = useState("");
-  const [ledger, setLedger] = useState({
-    current_round: "",
-    "online-money": "",
-  });
+  const supply = useSelector(selectSupply);
   const dispatch = useDispatch();
 
   timeago.register("en_short", timeAgoLocale);
@@ -47,16 +44,16 @@ const Home = () => {
   BigNumber.config({ DECIMAL_PLACES: 2 });
 
   useEffect(() => {
-    if (
-      currentRound &&
-      currentRound.round > 0 &&
-      currentRound.transactions &&
-      currentRound.transactions.length > 0
-    ) {
+    if (currentRound.transactions && currentRound.transactions.length > 0) {
       setTransactions([...currentRound.transactions].splice(0, 10));
-      dispatch(getLatestBlocks(currentRound.round));
     }
   }, [currentRound]);
+
+  useEffect(() => {
+    if (supply.current_round > 0) {
+      dispatch(getLatestBlocks(supply.current_round));
+    }
+  }, [supply]);
 
   const getPrice = () => {
     return axios({
@@ -91,26 +88,7 @@ const Home = () => {
 
   useEffect(() => {
     document.title = "AlgoSearch (ALGO) Blockchain Explorer";
-    axios({
-      method: "get",
-      url: `${siteName}/v1/algod/ledger/supply`,
-    })
-      .then((response) => {
-        const _onlineMoney = Number(
-          microAlgosToAlgos(response.data["online-money"])
-        );
-        const _results = {
-          current_round: integerFormatter.format(response.data.current_round),
-          "online-money": currencyFormatter.format(_onlineMoney),
-        };
-        setLedger(_results);
-      })
-      .catch((error) => {
-        console.error(
-          "Error when retrieving ledger supply from Algod: " + error
-        );
-      });
-
+    dispatch(getSupply());
     dispatch(getCurrentRound());
     Promise.all([getPrice(), getCirculatingSupply()]).then((results) => {
       console.log("Promise.all results: ", results);
@@ -165,7 +143,15 @@ const Home = () => {
       <div className={styles["home-cards"]}>
         <Statscard
           stat="Latest Round"
-          value={loading ? <Load /> : <>{ledger["current_round"]}</>}
+          value={
+            loading ? (
+              <Load />
+            ) : (
+              <Link href={`/block/${supply["current_round"]}`}>
+                {integerFormatter.format(supply["current_round"])}
+              </Link>
+            )
+          }
         />
         <Statscard
           stat="Online Stake"
@@ -174,7 +160,7 @@ const Home = () => {
               <Load />
             ) : (
               <div>
-                <AlgoIcon /> {ledger["online-money"]}
+                <AlgoIcon /> {supply["online-money"]}
               </div>
             )
           }

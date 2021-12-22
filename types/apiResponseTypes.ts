@@ -9,3 +9,8 @@ export interface ILatestBlocksResponse {
   num_of_pages: number;
   items: [];
 }
+
+export interface ISupply {
+  current_round: number;
+  "online-money": string;
+}

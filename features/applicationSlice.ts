@@ -1,11 +1,15 @@
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
 import { ICurrentRoundResponse, ILatestBlocksResponse } from "../types/apiResponseTypes";
-import {apiGetCurrentRound, apiGetLatestBlocks} from "../utils/api"
+import {apiGetCurrentRound, apiGetLatestBlocks, apiGetSupply} from "../utils/api"
 import {State} from "../store"
 
 export interface IApplicationState {
   currentRound: ICurrentRoundResponse;
   latestBlocks: [];
+  supply: {
+    current_round: number;
+    "online-money": string;
+  }
 }
 
 const initialState: IApplicationState = {
@@ -13,8 +17,17 @@ const initialState: IApplicationState = {
     round: 0,
     "genesis-id": 0,
   },
-  latestBlocks: []
+  latestBlocks: [],
+  supply: {
+    current_round: 0,
+    "online-money": ""
+  }
 };
+
+export const getSupply = createAsyncThunk("app/getSupply", async () => {
+  const response = await apiGetSupply() ?? initialState.supply
+  return response;
+})
 
 export const getCurrentRound = createAsyncThunk("app/getCurrentRound", async () => {
   const response: ICurrentRoundResponse = await apiGetCurrentRound() ?? initialState.currentRound
@@ -39,11 +52,15 @@ export const applicationSlice = createSlice({
       .addCase(getLatestBlocks.fulfilled, (state, action: PayloadAction<ILatestBlocksResponse>) => {
         state.latestBlocks = action.payload.items;
       })
+      .addCase(getSupply.fulfilled, (state, action: PayloadAction<ISupply>) => {
+        state.supply = action.payload;
+      })
   }
 });
 
 export const selectCurrentRound = (state: State) => state.app.currentRound;
 export const selectLatestBlocks = (state: State) => state.app.latestBlocks;
+export const selectSupply = (state: State) => state.app.supply;
 
 // export const {} = applicationSlice.actions;
 

@@ -51,3 +51,28 @@ export const currencyFormatter = new Intl.NumberFormat('en-US', {
 export const integerFormatter = new Intl.NumberFormat('en-US', {
   maximumFractionDigits: 2
 });
+
+export enum TxType {
+  Pay = "pay",
+  KeyReg = "keyreg",
+  AssetConfig = "acfg",
+  AssetTransfer = "axfer",
+  AssetFreeze = "afrz",
+  App = "appl",
+}
+
+export const getTxTypeName = (txType: TxType) => {
+  switch (txType) {
+    case TxType.KeyReg:
+      return "Key Registration";
+    case TxType.AssetConfig:
+      return "Asset Configuration";
+    case TxType.AssetTransfer:
+      return "Asset Transfer";
+    case TxType.App:
+      return "Application Call";
+    case TxType.Pay:
+    default:
+      return "Payment";
+  }
+};

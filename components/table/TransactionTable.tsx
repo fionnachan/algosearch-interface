@@ -5,18 +5,14 @@ import React, { useEffect, useState } from "react";
 import TimeAgo from "timeago-react";
 import { TransactionResponse } from "../../pages/tx/[_txid]";
 import { siteName } from "../../utils/constants";
-import { ellipseAddress, microAlgosToAlgos } from "../../utils/stringUtils";
+import {
+  ellipseAddress,
+  getTxTypeName,
+  microAlgosToAlgos,
+  TxType,
+} from "../../utils/stringUtils";
 import AlgoIcon from "../algoicon";
 import styles from "./TransactionTable.module.scss";
-
-export enum TxType {
-  Pay = "pay",
-  KeyReg = "keyreg",
-  AssetConfig = "acfg",
-  AssetTransfer = "axfer",
-  AssetFreeze = "afrz",
-  App = "appl",
-}
 
 const TransactionTable = ({
   transactions,
@@ -91,9 +87,9 @@ const TransactionTable = ({
                 </span>
               </div>
               <div className={styles["transaction-info"]}>
-                <span>Type: {tx["tx-type"]}</span>
+                <span>{getTxTypeName(tx["tx-type"])}</span>
                 <span>
-                  {tx["tx-type"] === "axfer" ? (
+                  {tx["tx-type"] === TxType.AssetTransfer ? (
                     `${microAlgosToAlgos(
                       tx["asset-transfer-transaction"].amount
                     )} ${_asaUnit}`

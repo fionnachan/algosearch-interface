@@ -12,6 +12,7 @@ import Load from "../../components/tableloading";
 import { formatValue, siteName } from "../../utils/constants";
 import styles from "./Block.module.css";
 import {
+  getTxTypeName,
   integerFormatter,
   microAlgosToAlgos,
   removeSpace,
@@ -26,7 +27,6 @@ const Block = () => {
   const [loading, setLoading] = useState(true);
 
   const getBlock = (blockNum: number) => {
-    console.log("IN HERE");
     axios({
       method: "get",
       url: `${siteName}/v1/algod/rounds/${blockNum}`,
@@ -75,7 +75,9 @@ const Block = () => {
     {
       Header: "Type",
       accessor: "tx-type",
-      Cell: (props) => <span className="type noselect">{props.value}</span>,
+      Cell: ({ value }: { value: string }) => (
+        <span className="type noselect">{getTxTypeName(value)}</span>
+      ),
     },
     {
       Header: "From",
@@ -119,71 +121,68 @@ const Block = () => {
         parentLinkName="Blocks"
         currentLinkName={`Block #${blockNum}`}
       />
-      <div className="block-table">
-        <span>Block Overview</span>
-        <div>
-          <table cellSpacing="0">
-            <thead>
-              <tr>
-                <th>Identifier</th>
-                <th>Value</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>Round</td>
-                <td>{blockNum}</td>
-              </tr>
-              <tr>
-                <td>Proposer</td>
-                <td>
-                  {loading ? (
-                    <Load />
-                  ) : (
-                    <Link href={`/address/${data.proposer}`}>
-                      {data.proposer}
-                    </Link>
-                  )}
-                </td>
-              </tr>
-              <tr>
-                <td>Block hash</td>
-                <td>{loading ? <Load /> : data.blockHash}</td>
-              </tr>
-              <tr>
-                <td>Previous block hash</td>
-                <td>
-                  {loading ? (
-                    <Load />
-                  ) : (
-                    <Link href={`/block/${parseInt(blockNum) - 1}`}>
-                      {data["previous-block-hash"]}
-                    </Link>
-                  )}
-                </td>
-              </tr>
-              <tr>
-                <td>Seed</td>
-                <td>{loading ? <Load /> : data.seed}</td>
-              </tr>
-              <tr>
-                <td>Created at</td>
-                <td>
-                  {loading ? (
-                    <Load />
-                  ) : (
-                    moment.unix(data.timestamp).format("LLLL")
-                  )}
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
+      <div className={styles["block-table"]}>
+        <table cellSpacing="0">
+          <thead>
+            <tr>
+              <th>Identifier</th>
+              <th>Value</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Round</td>
+              <td>{blockNum}</td>
+            </tr>
+            <tr>
+              <td>Proposer</td>
+              <td>
+                {loading ? (
+                  <Load />
+                ) : (
+                  <Link href={`/address/${data.proposer}`}>
+                    {data.proposer}
+                  </Link>
+                )}
+              </td>
+            </tr>
+            <tr>
+              <td>Block hash</td>
+              <td>{loading ? <Load /> : data.blockHash}</td>
+            </tr>
+            <tr>
+              <td>Previous block hash</td>
+              <td>
+                {loading ? (
+                  <Load />
+                ) : (
+                  <Link href={`/block/${parseInt(blockNum) - 1}`}>
+                    {data["previous-block-hash"]}
+                  </Link>
+                )}
+              </td>
+            </tr>
+            <tr>
+              <td>Seed</td>
+              <td>{loading ? <Load /> : data.seed}</td>
+            </tr>
+            <tr>
+              <td>Created at</td>
+              <td>
+                {loading ? (
+                  <Load />
+                ) : (
+                  moment.unix(data.timestamp).format("LLLL")
+                )}
+              </td>
+            </tr>
+          </tbody>
+        </table>
       </div>
       {transactions && transactions.length > 0 ? (
-        <div className="block-table">
-          <span>Transactions</span>
-          <div>
+        <div>
+          <h3 class={styles["table-header"]}>Transactions</h3>
+          <div className={styles["block-table"]}>
             <ReactTable
               data={transactions}
               columns={columns}
@@ -196,95 +195,6 @@ const Block = () => {
           </div>
         </div>
       ) : null}
-      <div className="block-table">
-        <span>Governance Overview</span>
-        <div>
-          <table cellSpacing="0">
-            <thead>
-              <tr>
-                <th>Identifier</th>
-                <th>Value</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>Current protocol</td>
-                <td>
-                  {loading ? (
-                    <Load />
-                  ) : (
-                    <a
-                      href={data["upgrade-state"]["current-protocol"]}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      {data["upgrade-state"]["current-protocol"]}
-                    </a>
-                  )}
-                </td>
-              </tr>
-              <tr>
-                <td>Next protocol</td>
-                <td>
-                  {loading ? (
-                    <Load />
-                  ) : (
-                    <a
-                      href={data["upgrade-state"]["next-protocol"]}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      {data["upgrade-state"]["next-protocol"]}
-                    </a>
-                  )}
-                </td>
-              </tr>
-              <tr>
-                <td>Next protocol approvals</td>
-                <td>
-                  {loading ? (
-                    <Load />
-                  ) : (
-                    data["upgrade-state"]["next-protocol-approvals"]
-                  )}
-                </td>
-              </tr>
-              <tr>
-                <td>Next protocol vote before</td>
-                <td>
-                  {loading ? (
-                    <Load />
-                  ) : (
-                    data["upgrade-state"]["next-protocol-vote-before"]
-                  )}
-                </td>
-              </tr>
-              <tr>
-                <td>Next protocol switch on</td>
-                <td>
-                  {loading ? (
-                    <Load />
-                  ) : (
-                    data["upgrade-state"]["next-protocol-switch-on"]
-                  )}
-                </td>
-              </tr>
-              <tr>
-                <td>Upgrade proposal</td>
-                <td>
-                  {loading ? <Load /> : data["upgrade-vote"]["upgrade-propose"]}
-                </td>
-              </tr>
-              <tr>
-                <td>Upgrade approved</td>
-                <td>
-                  {loading ? <Load /> : data["upgrade-vote"]["upgrade-approve"]}
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
     </Layout>
   );
 };

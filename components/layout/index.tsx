@@ -1,4 +1,4 @@
-import React, { ReactChildren, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import moment from "moment";
 import Head from "next/head";
 import styles from "./Layout.module.css";
@@ -10,13 +10,13 @@ import HomeHeader from "./HomeHeader";
 import HomeFooter from "./HomeFooter";
 
 type LayoutPropsType = {
-  addresspage: boolean;
-  data: {
+  addresspage?: boolean;
+  data?: {
     balance: number;
     address: string;
   };
-  children: ReactChildren;
-  homepage: boolean;
+  children: React.ReactNode;
+  homepage?: boolean;
 };
 
 const Layout = ({ addresspage, data, homepage, children }: LayoutPropsType) => {

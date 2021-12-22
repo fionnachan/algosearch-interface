@@ -21,53 +21,42 @@ import { BigNumber } from "bignumber.js";
 import Button from "@mui/material/Button";
 import Table from "../components/table";
 import TransactionTable from "../components/table/TransactionTable";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  getCurrentRound,
+  getLatestBlocks,
+  selectCurrentRound,
+  selectLatestBlocks,
+} from "../features/applicationSlice";
 
 const Home = () => {
-  const [blocks, setBlocks] = useState([]);
   const [transactions, setTransactions] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [genesisId, setGenesisId] = useState(0);
-  const [currentRound, setCurrentRound] = useState(0);
+  const currentRound = useSelector(selectCurrentRound);
+  const blocks = useSelector(selectLatestBlocks);
   const [price, setPrice] = useState(0);
   const [circulatingSupply, setCirculatingSupply] = useState("");
   const [ledger, setLedger] = useState({
     current_round: "",
     "online-money": "",
   });
+  const dispatch = useDispatch();
 
   timeago.register("en_short", timeAgoLocale);
 
   BigNumber.config({ DECIMAL_PLACES: 2 });
-  const getLatest = () => {
-    return axios({
-      method: "get",
-      url: `${siteName}/v1/algod/current-round`,
-    })
-      .then((response) => {
-        if (response.data) {
-          console.log("algod current round: ", response.data);
-          const genesisId = response.data["genesis-id"];
-          setCurrentRound(response.data.round);
-          setTransactions(response.data.transactions.slice(0, 10));
-          setGenesisId(genesisId);
 
-          return axios({
-            method: "get",
-            url: `${siteName}/v1/rounds?latest_blk=${response.data.round}&page=1&limit=10&order=desc`,
-          })
-            .then((resp) => {
-              console.log("blocks: ", resp.data);
-              return resp.data;
-            })
-            .catch((error) => {
-              console.log("Exception when retrieving last 10 blocks: " + error);
-            });
-        }
-      })
-      .catch((error) => {
-        console.error("Error when retrieving latest statistics: " + error);
-      });
-  };
+  useEffect(() => {
+    if (
+      currentRound &&
+      currentRound.round > 0 &&
+      currentRound.transactions &&
+      currentRound.transactions.length > 0
+    ) {
+      setTransactions([...currentRound.transactions].splice(0, 10));
+      dispatch(getLatestBlocks(currentRound.round));
+    }
+  }, [currentRound]);
 
   const getPrice = () => {
     return axios({
@@ -122,15 +111,13 @@ const Home = () => {
         );
       });
 
-    Promise.all([getPrice(), getCirculatingSupply(), getLatest()]).then(
-      (results) => {
-        console.log("Promise.all results: ", results);
-        setPrice(results[0]);
-        setCirculatingSupply(results[1] || "");
-        setBlocks(results[2]?.items || []);
-        setLoading(false);
-      }
-    );
+    dispatch(getCurrentRound());
+    Promise.all([getPrice(), getCirculatingSupply()]).then((results) => {
+      console.log("Promise.all results: ", results);
+      setPrice(results[0]);
+      setCirculatingSupply(results[1] || "");
+      setLoading(false);
+    });
   }, []);
 
   const block_columns = [

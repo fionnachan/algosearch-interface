@@ -4,7 +4,7 @@ import styles from "./Breadcrumbs.module.scss";
 
 const Breadcrumbs = (props: {
   name: string;
-  address: string;
+  address?: string;
   parentLink: string;
   parentLinkName: string;
   currentLinkName: string;

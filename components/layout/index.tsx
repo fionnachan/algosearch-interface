@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import moment from "moment";
 import Head from "next/head";
 import styles from "./Layout.module.css";
@@ -22,22 +22,25 @@ type LayoutPropsType = {
 const Layout = ({ addresspage, data, homepage, children }: LayoutPropsType) => {
   const [scroll, setScroll] = useState(false);
 
-  useEffect(() => {
+  const setup = useCallback(() => {
     // Moment global setup
     moment.updateLocale("en", {
       relativeTime: {
         s: (number) => number + " seconds",
       },
     });
+    // Scroll to top button — render behaviour
+    const renderScrollTop = () => {
+      let scroll_position = window.pageYOffset;
+      setScroll(!scroll && scroll_position > 500);
+    };
     // Check for scroll to top button position
     window.addEventListener("scroll", renderScrollTop);
-  }, []);
+  }, [scroll]);
 
-  // Scroll to top button — render behaviour
-  const renderScrollTop = () => {
-    let scroll_position = window.pageYOffset;
-    setScroll(!scroll && scroll_position > 500);
-  };
+  useEffect(() => {
+    setup();
+  }, [setup]);
 
   // Scroll to top button — scroll up behaviour
   const scrollToTop = () => {
@@ -50,17 +53,6 @@ const Layout = ({ addresspage, data, homepage, children }: LayoutPropsType) => {
   return (
     <div className={styles.layout}>
       <Head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link
-          rel="preconnect"
-          href="https://fonts.gstatic.com"
-          crossOrigin="true"
-        />
-        <link
-          href="https://fonts.googleapis.com/css2?family=Lexend:wght@100;200;300;400&display=swap"
-          rel="stylesheet"
-        ></link>
-        <link rel="shortcut icon" href="/favicon.svg" />
         <title>AlgoSearch | Algorand Block Explorer</title>
       </Head>
       <MainHeader />

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import axios from "axios";
 import Link from "next/link";
 import Layout from "../../components/layout";
@@ -15,6 +15,7 @@ import {
   removeSpace,
 } from "../../utils/stringUtils";
 import Table from "../../components/table";
+import Head from "next/head";
 
 const Transactions = () => {
   const [loading, setLoading] = useState(true);
@@ -31,7 +32,7 @@ const Transactions = () => {
     updateTransactions(pageIndex); // Run update to get new data based on update page size and current index
   };
 
-  const getTransactions = async () => {
+  const getTransactions = useCallback(async () => {
     // Let the request headtransaction be max_transactions - (current page * pageSize)
     const latestTxn = await axios({
       method: "get",
@@ -62,7 +63,7 @@ const Transactions = () => {
           console.error("Exception when updating transactions: " + error);
         });
     }
-  };
+  }, [pageSize]);
 
   // Update transactions based on page number
   const updateTransactions = (pageIndex: number) => {
@@ -86,9 +87,8 @@ const Transactions = () => {
   };
 
   useEffect(() => {
-    document.title = "AlgoSearch | Transactions";
     getTransactions();
-  }, []);
+  }, [getTransactions]);
 
   // Table columns
   const columns = [
@@ -154,6 +154,10 @@ const Transactions = () => {
 
   return (
     <Layout>
+      <Head>
+        <title>AlgoSearch | Transactions</title>
+      </Head>
+
       <Breadcrumbs
         name="Transactions"
         parentLink="/"

@@ -1,7 +1,15 @@
 import React from "react";
 import styles from "./AlgoIcon.module.css";
 
-const AlgoIcon = ({ isLightColor = false, width = 14, height = 14 }) => {
+const AlgoIcon = ({
+  isLightColor = false,
+  width = 14,
+  height = 14,
+}: {
+  isLightColor?: boolean;
+  width?: number;
+  height?: number;
+}) => {
   return (
     <div className={styles.icon} style={{ width: width, height: height }}>
       <svg

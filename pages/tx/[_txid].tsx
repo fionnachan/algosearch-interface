@@ -61,7 +61,7 @@ const Transaction = () => {
 
   useEffect(() => {
     document.title = `AlgoSearch | Transaction ${txid}`;
-  }, []);
+  }, [txid]);
 
   useEffect(() => {
     if (!_txid) {

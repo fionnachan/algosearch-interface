@@ -1,3 +1,4 @@
+import React from "react";
 import Link from "next/link";
 import AlgoIcon from "../../components/algoicon";
 import { integerFormatter, removeSpace } from "../../utils/stringUtils";

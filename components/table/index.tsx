@@ -35,9 +35,15 @@ const Table = ({
       >
         <TableHead>
           {headerGroups.map((headerGroup) => (
-            <TableRow {...headerGroup.getHeaderGroupProps()}>
+            <TableRow
+              {...headerGroup.getHeaderGroupProps()}
+              key={headerGroup.getHeaderGroupProps().key}
+            >
               {headerGroup.headers.map((column) => (
-                <TableCell {...column.getHeaderProps()}>
+                <TableCell
+                  {...column.getHeaderProps()}
+                  key={column.getHeaderProps().key}
+                >
                   {column.render("Header")}
                 </TableCell>
               ))}
@@ -48,9 +54,12 @@ const Table = ({
           {rows.map((row, i) => {
             prepareRow(row);
             return (
-              <TableRow {...row.getRowProps()}>
+              <TableRow {...row.getRowProps()} key={row.getRowProps().key}>
                 {row.cells.map((cell) => (
-                  <TableCell {...cell.getCellProps()}>
+                  <TableCell
+                    {...cell.getCellProps()}
+                    key={cell.getCellProps().key}
+                  >
                     {cell.render("Cell")}
                   </TableCell>
                 ))}

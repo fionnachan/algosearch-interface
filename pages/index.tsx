@@ -53,7 +53,7 @@ const Home = () => {
     if (supply.current_round > 0) {
       dispatch(getLatestBlocks(supply.current_round));
     }
-  }, [supply]);
+  }, [supply, dispatch]);
 
   const getPrice = () => {
     return axios({
@@ -96,7 +96,7 @@ const Home = () => {
       setCirculatingSupply(results[1] || "");
       setLoading(false);
     });
-  }, []);
+  }, [dispatch]);
 
   const block_columns = [
     {

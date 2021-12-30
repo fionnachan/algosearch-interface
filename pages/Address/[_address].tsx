@@ -4,13 +4,12 @@ import moment from "moment";
 import { useRouter } from "next/router";
 import Link from "next/link";
 import Layout from "../../components/layout";
-import { formatValue, siteName } from "../../utils/constants";
+import { siteName } from "../../utils/constants";
 import Load from "../../components/tableloading";
 import Statscard from "../../components/statscard";
 import AlgoIcon from "../../components/algoicon";
 import ReactTable from "react-table-6";
 import "react-table-6/react-table.css";
-import styles from "./Address.module.css";
 import statcardStyles from "../../components/statscard/Statscard.module.scss";
 import {
   integerFormatter,
@@ -77,7 +76,7 @@ const Address = () => {
     }
     console.log("_address: ", _address);
     setAddress(_address.toString());
-    document.title = `AlgoSearch | Address ${address}`;
+    document.title = `AlgoSearch | Address ${_address.toString()}`;
     getAddressData(_address.toString());
     getAccountTx(_address.toString());
   }, [_address]);

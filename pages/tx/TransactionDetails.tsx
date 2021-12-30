@@ -10,6 +10,9 @@ const TransactionDetails = ({
 }: {
   transaction: TransactionResponse;
 }) => {
+  if (!transaction) {
+    return null;
+  }
   return (
     <>
       <div>

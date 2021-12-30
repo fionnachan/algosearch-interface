@@ -66,7 +66,7 @@ const TransactionTable = ({
               </span>
               <span className={styles.time}>
                 <TimeAgo
-                  datetime={new Date(moment.unix(tx["round-time"])._d)}
+                  datetime={new Date(moment.unix(tx["round-time"]).toDate())}
                   locale="en_short"
                 />
               </span>

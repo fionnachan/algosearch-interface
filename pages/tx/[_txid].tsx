@@ -6,8 +6,8 @@ import Load from "../../components/tableloading";
 import { siteName } from "../../utils/constants";
 import styles from "./Transaction.module.css";
 import { useRouter } from "next/router";
-import { TxType } from "../../components/table/TransactionTable";
 import TransactionDetails from "./TransactionDetails";
+import { TxType } from "../../utils/stringUtils";
 
 export type TransactionResponse = {
   id: number;
@@ -20,11 +20,14 @@ export type TransactionResponse = {
   "receiver-rewards": number;
   "payment-transaction": {
     amount: number;
+    "close-amount": number;
+    "close=remainder-to": string;
     receiver: string;
   };
   "asset-transfer-transaction": {
     "asset-id": number;
     amount: number;
+    receiver: string;
   };
   fee: number;
   "round-time": number;

@@ -130,7 +130,7 @@ const Home = () => {
       accessor: "timestamp",
       Cell: ({ value }: { value: number }) => (
         <TimeAgo
-          datetime={new Date(moment.unix(value)._d)}
+          datetime={new Date(moment.unix(value).toDate())}
           locale="en_short"
         ></TimeAgo>
       ),

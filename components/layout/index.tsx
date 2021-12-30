@@ -64,7 +64,7 @@ const Layout = ({ addresspage, data, homepage, children }: LayoutPropsType) => {
         <title>AlgoSearch | Algorand Block Explorer</title>
       </Head>
       <MainHeader />
-      {addresspage && (
+      {addresspage && data && (
         <AddressHeader balance={data.balance} address={data.address} />
       )}
       {homepage && <HomeHeader />}

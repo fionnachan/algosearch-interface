@@ -1,5 +1,5 @@
 import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { ICurrentRoundResponse, ILatestBlocksResponse } from "../types/apiResponseTypes";
+import { ICurrentRoundResponse, ILatestBlocksResponse, ISupply } from "../types/apiResponseTypes";
 import {apiGetCurrentRound, apiGetLatestBlocks, apiGetSupply} from "../utils/api"
 import {State} from "../store"
 

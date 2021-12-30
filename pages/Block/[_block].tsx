@@ -16,13 +16,35 @@ import {
   integerFormatter,
   microAlgosToAlgos,
   removeSpace,
+  TxType,
 } from "../../utils/stringUtils";
+import { TransactionResponse } from "../tx/[_txid]";
+
+interface IBlockData {
+  "block-hash": string;
+  "genesis-hash": string;
+  "genesis-id": string;
+  "previous-block-hash": string;
+  proposer: string;
+  rewards: {
+    "fee-sink": string;
+    "reward-calculation-round": number;
+    "reward-level": number;
+    "rewards-pool": string;
+    "rewards-rate": number;
+    "rewards-residue": number;
+  };
+  round: number;
+  seed: string;
+  timestamp: number;
+  transactions: TransactionResponse[];
+}
 
 const Block = () => {
   const router = useRouter();
   const { _block } = router.query;
   const [blockNum, setBlockNum] = useState(0);
-  const [data, setData] = useState([]);
+  const [data, setData] = useState<IBlockData>();
   const [transactions, setTransactions] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -75,30 +97,30 @@ const Block = () => {
     {
       Header: "Type",
       accessor: "tx-type",
-      Cell: ({ value }: { value: string }) => (
+      Cell: ({ value }: { value: TxType }) => (
         <span className="type noselect">{getTxTypeName(value)}</span>
       ),
     },
     {
       Header: "From",
       accessor: "sender",
-      Cell: (props) => (
-        <Link href={`/address/${props.value}`}>{props.value}</Link>
+      Cell: ({ value }: { value: string }) => (
+        <Link href={`/address/${value}`}>{value}</Link>
       ),
     },
     {
       Header: "To",
       accessor: "payment-transaction.receiver",
-      Cell: (props) => (
-        <Link href={`/address/${props.value}`}>{props.value}</Link>
+      Cell: ({ value }: { value: string }) => (
+        <Link href={`/address/${value}`}>{value}</Link>
       ),
     },
     {
       Header: "Amount",
       accessor: "payment-transaction.amount",
-      Cell: (props) => (
+      Cell: ({ value }: { value: number }) => (
         <span>
-          <AlgoIcon /> {microAlgosToAlgos(props.value)}
+          <AlgoIcon /> {microAlgosToAlgos(value)}
         </span>
       ),
     },
@@ -140,15 +162,17 @@ const Block = () => {
                 {loading ? (
                   <Load />
                 ) : (
-                  <Link href={`/address/${data.proposer}`}>
-                    {data.proposer}
-                  </Link>
+                  data && (
+                    <Link href={`/address/${data.proposer}`}>
+                      {data.proposer}
+                    </Link>
+                  )
                 )}
               </td>
             </tr>
             <tr>
               <td>Block hash</td>
-              <td>{loading ? <Load /> : data.blockHash}</td>
+              <td>{loading ? <Load /> : data && data["block-hash"]}</td>
             </tr>
             <tr>
               <td>Previous block hash</td>
@@ -156,15 +180,15 @@ const Block = () => {
                 {loading ? (
                   <Load />
                 ) : (
-                  <Link href={`/block/${parseInt(blockNum) - 1}`}>
-                    {data["previous-block-hash"]}
+                  <Link href={`/block/${blockNum - 1}`}>
+                    {data && data["previous-block-hash"]}
                   </Link>
                 )}
               </td>
             </tr>
             <tr>
               <td>Seed</td>
-              <td>{loading ? <Load /> : data.seed}</td>
+              <td>{loading ? <Load /> : data && data.seed}</td>
             </tr>
             <tr>
               <td>Created at</td>
@@ -172,7 +196,7 @@ const Block = () => {
                 {loading ? (
                   <Load />
                 ) : (
-                  moment.unix(data.timestamp).format("LLLL")
+                  data && moment.unix(data.timestamp).format("LLLL")
                 )}
               </td>
             </tr>
@@ -181,14 +205,14 @@ const Block = () => {
       </div>
       {transactions && transactions.length > 0 ? (
         <div>
-          <h3 class={styles["table-header"]}>Transactions</h3>
+          <h3 className={styles["table-header"]}>Transactions</h3>
           <div className={styles["block-table"]}>
             <ReactTable
               data={transactions}
               columns={columns}
               loading={loading}
-              defaultPageSize={5}
-              pageSizeOptions={[5, 10, 15]}
+              defaultPageSize={10}
+              pageSizeOptions={[10, 25, 50]}
               sortable={false}
               className="transactions-table"
             />

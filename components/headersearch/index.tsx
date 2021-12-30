@@ -4,6 +4,7 @@ import { siteName } from "../../utils/constants";
 import styles from "./HeaderSearch.module.scss";
 import { IconButton, styled } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
+import { useRouter } from "next/router";
 
 const StyledIconButton = styled(IconButton)(({ theme }) => ({
   fontSize: "var(--font-size-s)",
@@ -15,7 +16,8 @@ const StyledIconButton = styled(IconButton)(({ theme }) => ({
   },
 }));
 
-const HeaderSearch = (props) => {
+const HeaderSearch = () => {
+  const router = useRouter();
   const [query, setQuery] = useState("");
   const search = () => {
     const search = query ? query : "";
@@ -26,21 +28,21 @@ const HeaderSearch = (props) => {
       .then((response) => {
         switch (response.data) {
           case "block":
-            props.history.push(`/block/${search}`);
+            router.push(`/block/${search}`);
             break;
           case "transaction":
-            props.history.push(`/tx/${search}`);
+            router.push(`/tx/${search}`);
             break;
           case "address":
-            props.history.push(`/address/${search}`);
+            router.push(`/address/${search}`);
             break;
           default:
-            props.history.push("/404");
+            router.push("/error");
             break;
         }
       })
       .catch(() => {
-        props.history.push("/404");
+        router.push("/error");
       });
   };
   return (

@@ -28,10 +28,12 @@ const AddressTransaction = () => {
   };
 
   useEffect(() => {
-    document.title = `AlgoSearch | Transactions for ${address}`;
-    setAddress(_address.toString());
-    getAllTransactions(address);
-  }, []);
+    if (_address) {
+      document.title = `AlgoSearch | Transactions for ${_address}`;
+      setAddress(_address.toString());
+      getAllTransactions(_address.toString());
+    }
+  }, [_address]);
 
   // Table columns
   const columns = [

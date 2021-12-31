@@ -28,6 +28,15 @@ export type TransactionResponse = {
     "asset-id": number;
     amount: number;
     receiver: string;
+    "close-to": string;
+    sender: string;
+  };
+  "asset-config-transaction": {
+    params: {
+      creator: string;
+      decimals: number;
+      total: number;
+    };
   };
   fee: number;
   "round-time": number;

@@ -14,22 +14,32 @@ import {
 import AlgoIcon from "../algoicon";
 import styles from "./TransactionTable.module.scss";
 
+interface IAsaMap {
+  [key: number]: string;
+}
+
 const TransactionTable = ({
   transactions,
 }: {
   transactions: TransactionResponse[];
 }) => {
-  const [asaList, setAsaList] = useState<string[]>([]);
+  const [asaMap, setAsaMap] = useState<IAsaMap>([]);
 
   useEffect(() => {
     async function getAsas() {
+      const dedupedAsaList = Array.from(
+        new Set(
+          transactions
+            .filter((tx) => tx["tx-type"] === TxType.AssetTransfer)
+            .map((tx) => tx["asset-transfer-transaction"]["asset-id"])
+        )
+      );
       const _asaList: string[] = await Promise.all(
-        transactions.map(async (tx) => {
-          if (tx["tx-type"] === TxType.AssetTransfer) {
-            const asa_id = tx["asset-transfer-transaction"]["asset-id"];
-            return await axios({
+        dedupedAsaList.map(
+          async (asaId) =>
+            await axios({
               method: "get",
-              url: `${siteName}/v1/algod/assets/${asa_id}`,
+              url: `${siteName}/v1/algod/assets/${asaId}`,
             })
               .then((response) => {
                 console.log(
@@ -40,14 +50,20 @@ const TransactionTable = ({
               })
               .catch((error) => {
                 console.error("Error when retrieving Algorand ASA");
-              });
-          } else {
-            return null;
-          }
-        })
+              })
+        )
       );
-      setAsaList(_asaList);
-      console.log("_asalist: ", _asaList);
+      const _asaMap: IAsaMap = dedupedAsaList.reduce(
+        (prev, asaId, index) => ({
+          ...prev,
+          [asaId]: _asaList[index],
+        }),
+        {}
+      );
+      if (_asaMap) {
+        setAsaMap(_asaMap);
+      }
+      console.log("_asaMap: ", _asaMap);
     }
     getAsas();
   }, [transactions]);
@@ -56,7 +72,7 @@ const TransactionTable = ({
     <div className={styles["transaction-table"]}>
       {transactions.map((tx: TransactionResponse, index: number) => {
         const _receiver = tx["payment-transaction"].receiver || tx.sender;
-        let _asaUnit = asaList[index];
+        let _asaUnit = asaMap[tx["asset-transfer-transaction"]["asset-id"]];
 
         return (
           <div key={tx.id} className={styles["transaction-row"]}>

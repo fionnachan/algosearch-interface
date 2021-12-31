@@ -61,6 +61,13 @@ export enum TxType {
   App = "appl",
 }
 
+export const AssetTxTypes = [TxType.AssetConfig, TxType.AssetTransfer, TxType.AssetFreeze]
+
+export const AssetTxMap = {
+  [TxType.AssetTransfer]: "asset-transfer-transaction",
+  [TxType.AssetFreeze]: "asset-freeze-transaction"
+}
+
 export const getTxTypeName = (txType: TxType) => {
   switch (txType) {
     case TxType.KeyReg:

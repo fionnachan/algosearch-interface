@@ -3,6 +3,10 @@
   justify-content: space-between;
   width: 100%;
   text-align: center;
+
+  @media screen and (max-width: 768px) {
+    flex-direction: column;
+  }
 }
 
 .block-table {
@@ -11,6 +15,10 @@
   padding-top: 20px;
   vertical-align: top;
   text-align: left;
+
+  @media screen and (max-width: 768px) {
+    flex: 1 1 auto;
+  }
 }
 
 .block-table > div {
@@ -22,4 +30,9 @@
 .home-cards {
   display: flex;
   gap: var(--space-m);
+
+  @media screen and (max-width: 768px) {
+    flex-wrap: wrap;
+    gap: var(--space-s);
+  }
 }

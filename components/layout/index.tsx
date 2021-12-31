@@ -1,7 +1,6 @@
-import React, { useCallback, useEffect, useState } from "react";
-import moment from "moment";
+import React, { useEffect, useState } from "react";
 import Head from "next/head";
-import styles from "./Layout.module.css";
+import styles from "./Layout.module.scss";
 
 import AddressHeader from "../addressheader";
 import MainHeader from "../mainheader";
@@ -22,25 +21,14 @@ type LayoutPropsType = {
 const Layout = ({ addresspage, data, homepage, children }: LayoutPropsType) => {
   const [scroll, setScroll] = useState(false);
 
-  const setup = useCallback(() => {
-    // Moment global setup
-    moment.updateLocale("en", {
-      relativeTime: {
-        s: (number) => number + " seconds",
-      },
-    });
+  useEffect(() => {
     // Scroll to top button — render behaviour
     const renderScrollTop = () => {
       let scroll_position = window.pageYOffset;
       setScroll(!scroll && scroll_position > 500);
     };
-    // Check for scroll to top button position
-    window.addEventListener("scroll", renderScrollTop);
-  }, [scroll]);
-
-  useEffect(() => {
-    setup();
-  }, [setup]);
+    window.addEventListener("scroll", () => renderScrollTop());
+  }, []);
 
   // Scroll to top button — scroll up behaviour
   const scrollToTop = () => {

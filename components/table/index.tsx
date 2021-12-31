@@ -5,6 +5,7 @@ import TableCell from "@mui/material/TableCell";
 import TableHead from "@mui/material/TableHead";
 import TableRow from "@mui/material/TableRow";
 import { Column, useTable } from "react-table";
+import styles from "./TransactionTable.module.scss";
 
 const Table = ({
   columns,
@@ -31,7 +32,7 @@ const Table = ({
     <>
       <MaUTable
         {...getTableProps()}
-        className={`transactions-table${className ? " " + className : ""}`}
+        className={`${styles["mui-table"]}${className ? " " + className : ""}`}
       >
         <TableHead>
           {headerGroups.map((headerGroup) => (

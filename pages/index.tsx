@@ -8,7 +8,7 @@ import Layout from "../components/layout";
 import AlgoIcon from "../components/algoicon";
 import Statscard from "../components/statscard";
 import Load from "../components/tableloading";
-import styles from "./Home.module.css";
+import styles from "./Home.module.scss";
 import {
   currencyFormatter,
   ellipseAddress,

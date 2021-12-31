@@ -8,14 +8,18 @@
 
 .content {
   position: relative;
-  padding: 40px 20px 80px;
+  padding: var(--space-xxxl) var(--space-m) var(--space-xxxxl);
   flex: 1 0 auto;
+
+  @media screen and (max-width: 768px) {
+    width: 100%;
+    padding: var(--space-m);
+  }
 }
 
 .subfooter {
   width: 100%;
   background-color: #fafcff;
-  padding: 64px 0px;
   border-top: 1px solid #e7eaf3;
 }
 

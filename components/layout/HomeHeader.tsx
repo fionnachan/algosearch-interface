@@ -14,6 +14,7 @@ const HomeHeader = () => {
               width="400"
               height="400"
               viewBox="0, 0, 400,400"
+              className="hide-mobile"
             >
               <g id="svgg">
                 <path

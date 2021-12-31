@@ -11,6 +11,17 @@
     display: flex;
     justify-content: space-between;
     margin: auto;
+
+    @media screen and (max-width: 768px) {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+  }
+}
+
+.logo-text {
+  @media screen and (max-width: 768px) {
+    display: none;
   }
 }
 
@@ -18,6 +29,10 @@
   display: flex;
   justify-content: center;
   align-items: center;
+  @media screen and (max-width: 768px) {
+    width: 100%;
+    justify-content: space-between;
+  }
 }
 
 .logo {

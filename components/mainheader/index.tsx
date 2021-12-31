@@ -47,7 +47,7 @@ const MainHeader = () => {
                   ></path>
                 </g>
               </svg>
-              <span>lgoSearch</span>
+              <span className={styles["logo-text"]}>lgoSearch</span>
             </a>
             {/* <Image src="/logo.svg" width="160" height="40" /> */}
           </Link>

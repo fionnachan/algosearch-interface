@@ -47,8 +47,11 @@
     margin-right: -1.2px;
     margin-bottom: 2px;
   }
-  &:hover path {
-    fill: var(--blue);
+  &:hover {
+    color: var(--blue);
+    path {
+      fill: var(--blue);
+    }
   }
 }
 
@@ -70,16 +73,7 @@
     display: block;
     font-size: 16px;
     font-weight: 500;
-    color: #536d93;
     padding: 10px 10px;
-
-    &:hover {
-      color: var(--blue);
-    }
-
-    &.active {
-      color: var(--blue) !important;
-    }
   }
 }
 

@@ -7,6 +7,8 @@ import SearchIcon from "@mui/icons-material/Search";
 import { useRouter } from "next/router";
 
 const StyledIconButton = styled(IconButton)(({ theme }) => ({
+  width: "30px",
+  height: "30px",
   fontSize: "var(--font-size-s)",
   color: "white",
   background: "var(--blue-light)",

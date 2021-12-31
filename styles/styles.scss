@@ -1,12 +1,17 @@
 :root {
-  --bg-blue-light: #f5faff;
-  --blue-darkest: #022137;
-  --blue-darker: #1d326b;
-  --blue-dark: #4266a3;
-  --blue: #337afe;
-  --blue-light: #438ce6;
-  --blue-lighter: #9ab8cc;
+  --bg-blue-light: #f6fbff;
+  --blue-darkest: #0a1753;
+  --blue-darker: #174181;
+  --blue-dark: #1f5ca1;
+  --blue: #2f83d1;
+  --blue-light: #74a7e9;
+  --blue-lighter: #a4cef5;
   --blue-lightest: #fafcff;
+  --bg-gradient: linear-gradient(
+    180deg,
+    rgb(219, 235, 255) 0%,
+    rgb(242, 248, 253) 80%
+  );
   --grey-darkest: #333333;
   --grey-darker: #666666;
   --grey-dark: #888888;
@@ -71,10 +76,10 @@ h6 {
 }
 
 a {
-  color: var(--blue-light);
+  color: var(--blue);
 
   &:hover {
-    color: var(--blue);
+    color: var(--blue-light);
   }
 }
 

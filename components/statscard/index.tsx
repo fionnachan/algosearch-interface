@@ -4,7 +4,7 @@ import styles from "./Statscard.module.scss";
 const Statscard = ({ stat, value }: { stat: string; value: JSX.Element }) => {
   return (
     <div className={styles.statscard}>
-      <h4>{stat}</h4>
+      <h5>{stat}</h5>
       {value}
     </div>
   );

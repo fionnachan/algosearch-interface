@@ -10,7 +10,7 @@ import "react-table-6/react-table.css";
 import AlgoIcon from "../../components/algoicon";
 import Load from "../../components/tableloading";
 import { formatValue, siteName } from "../../utils/constants";
-import styles from "./Block.module.css";
+import styles from "./Block.module.scss";
 import {
   getTxTypeName,
   integerFormatter,

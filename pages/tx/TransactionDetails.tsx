@@ -1,8 +1,14 @@
 import React from "react";
 import Link from "next/link";
 import AlgoIcon from "../../components/algoicon";
-import { integerFormatter, removeSpace } from "../../utils/stringUtils";
+import {
+  integerFormatter,
+  microAlgosToAlgos,
+  removeSpace,
+} from "../../utils/stringUtils";
 import { TransactionResponse } from "./[_txid]";
+import "react-table-6/react-table.css";
+import styles from "../block/Block.module.scss";
 import moment from "moment";
 
 const TransactionDetails = ({
@@ -14,8 +20,8 @@ const TransactionDetails = ({
     return null;
   }
   return (
-    <>
-      <div>
+    <div className={styles["table-wrapper"]}>
+      <div className={styles["block-table"]}>
         <table cellSpacing="0">
           <thead>
             <tr>
@@ -71,18 +77,17 @@ const TransactionDetails = ({
             <tr>
               <td>Amount</td>
               <td>
-                <div className="tx-hasicon">
+                <div>
+                  <AlgoIcon />{" "}
                   {transaction["payment-transaction"].amount / 1000000}
-                  <AlgoIcon />
                 </div>
               </td>
             </tr>
             <tr>
               <td>Fee</td>
               <td>
-                <div className="tx-hasicon">
-                  {transaction.fee / 1000000}
-                  <AlgoIcon />
+                <div>
+                  <AlgoIcon /> {microAlgosToAlgos(transaction.fee)}
                 </div>
               </td>
             </tr>
@@ -116,7 +121,7 @@ const TransactionDetails = ({
             </tr>
             <tr>
               <td>Timestamp</td>
-              <td>{moment.unix(transaction.timestamp).format("LLLL")}</td>
+              <td>{moment.unix(transaction["round-time"]).format("LLLL")}</td>
             </tr>
             <tr>
               <td>Note</td>
@@ -144,9 +149,9 @@ const TransactionDetails = ({
           </tbody>
         </table>
       </div>
-      <div className="block-table">
-        <span>Miscellaneous Details</span>
-        <div>
+      <div>
+        <h4>Miscellaneous Details</h4>
+        <div className={styles["block-table"]}>
           <table cellSpacing="0">
             <thead>
               <tr>
@@ -158,18 +163,18 @@ const TransactionDetails = ({
               <tr>
                 <td>From rewards</td>
                 <td>
-                  <div className="tx-hasicon">
-                    {transaction["sender-rewards"] / 1000000}
-                    <AlgoIcon />
+                  <div>
+                    <AlgoIcon />{" "}
+                    {microAlgosToAlgos(transaction["sender-rewards"])}
                   </div>
                 </td>
               </tr>
               <tr>
                 <td>To rewards</td>
                 <td>
-                  <div className="tx-hasicon">
-                    {transaction["receiver-rewards"] / 1000000}
-                    <AlgoIcon />
+                  <div>
+                    <AlgoIcon />{" "}
+                    {microAlgosToAlgos(transaction["receiver-rewards"])}
                   </div>
                 </td>
               </tr>
@@ -185,7 +190,7 @@ const TransactionDetails = ({
           </table>
         </div>
       </div>
-    </>
+    </div>
   );
 };
 

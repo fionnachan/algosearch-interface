@@ -4,7 +4,6 @@ import Layout from "../../components/layout";
 import Breadcrumbs from "../../components/breadcrumbs";
 import Load from "../../components/tableloading";
 import { siteName } from "../../utils/constants";
-import styles from "./Transaction.module.css";
 import { useRouter } from "next/router";
 import TransactionDetails from "./TransactionDetails";
 import { TxType } from "../../utils/stringUtils";
@@ -88,8 +87,7 @@ const Transaction = () => {
         parentLinkName="Transactions"
         currentLinkName={`Transaction Details`}
       />
-      <div className={styles["block-table"]}>
-        <span>Transaction Details</span>
+      <div>
         {transaction ? (
           <TransactionDetails transaction={transaction} />
         ) : (

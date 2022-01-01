@@ -1,44 +1,52 @@
 .address-header {
-	width: 100%;
-	background-color: #fafcff;
-	border-bottom: 1px solid #e7eaf3;
+  width: 100%;
+  background-color: #fafcff;
+  border-bottom: 1px solid #e7eaf3;
 
-	> div {
-		display: flex;
-		justify-content: space-between;
-		align-items: flex-start;
-		padding: var(--space-xxxl) 0;
-		margin: auto;
-	}
+  > div {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    padding: var(--space-xxxl) 0;
+    margin: auto;
+  }
 
-	> div > div:first-child {
-		h3 {
-			font-size: 20px;
-			margin-bottom: var(--space-xs);
-		}
+  > div > div:first-child {
+    h3 {
+      margin-bottom: var(--space-xs);
+      @media screen and (max-width: 768px) {
+        margin-bottom: 0;
+      }
+    }
 
     div {
       display: flex;
       justify-content: center;
       align-items: center;
+      @media screen and (max-width: 768px) {
+        justify-content: flex-start;
+      }
     }
 
-		span {
-			width: 100%;
-			color: #536d93;
-			margin: 0;
-			white-space: nowrap;
-			overflow: hidden;
-			text-overflow: ellipsis;
-		}
-	}
+    span {
+      width: 100%;
+      color: var(--blue-dark);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin: 0;
+      @media screen and (max-width: 768px) {
+        max-width: 40vw;
+      }
+    }
+  }
 
-	h4 {
-		color: #536d93;
+  h4 {
+    color: var(--blue-dark);
     text-align: right;
-		text-transform: uppercase;
-		margin-bottom: var(--space-xs);
-	}
+    text-transform: uppercase;
+    margin-bottom: var(--space-xs);
+  }
 }
 
 .address-button {
@@ -47,24 +55,18 @@
 }
 
 .balance {
-	font-size: var(--font-size-l);
-	
-	span {
-		display: inline-flex;
-    margin-left: var(--space-xxs);
-	}
-}
+  font-size: var(--font-size-l);
 
-.qr-style {
-	padding: 5px 5px 2.5px 5px !important;
-	margin-top: 7px !important;
+  span {
+    display: inline-flex;
+    margin-left: var(--space-xxs);
+  }
 }
 
 @media screen and (max-width: 600px) {
-	.address-header {
-		padding-left: 5px;
-	}
-	.address-header > div {
-		width: calc(95vw - 10px);
-	}
+  .address-header > div {
+    max-width: 100%;
+    width: 100%;
+    padding: var(--space-xxxl) var(--space-l);
+  }
 }

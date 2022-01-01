@@ -107,6 +107,13 @@ const Blocks = () => {
         ),
       },
       {
+        Header: "Transactions",
+        accessor: "transactions",
+        Cell: ({ value }: { value: [] }) => (
+          <span>{value ? value.length : 0}</span>
+        ),
+      },
+      {
         Header: "Time",
         accessor: "timestamp",
         Cell: ({ value }: { value: number }) => (

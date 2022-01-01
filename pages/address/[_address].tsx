@@ -8,6 +8,7 @@ import { siteName } from "../../utils/constants";
 import Load from "../../components/tableloading";
 import Statscard from "../../components/statscard";
 import AlgoIcon from "../../components/algoicon";
+import styles from "./Address.module.css";
 import ReactTable from "react-table-6";
 import "react-table-6/react-table.css";
 import statcardStyles from "../../components/statscard/Statscard.module.scss";
@@ -226,11 +227,11 @@ const Address = () => {
           }
         />
       </div>
-      <div className="block-table addresses-table">
+      <div className={`block-table ${styles["addresses-table"]}`}>
         <span>
           Latest {loading || !accountTxns ? 0 : accountTxns.length} transactions{" "}
           {loading !== true && accountTxns && accountTxns.length > 24 && (
-            <Link href={`/addresstx/${address}`}>View more</Link>
+            <Link href={`/addresstx/${address}`}>VIEW MORE</Link>
           )}
         </span>
         <div>

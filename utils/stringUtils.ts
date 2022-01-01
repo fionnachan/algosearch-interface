@@ -12,7 +12,7 @@ export function ellipseAddress(address = "", width = 6): string {
 
 export function microAlgosToAlgos(microAlgos: number) : string | number {
     return Number.isSafeInteger(microAlgos) ? 
-        (microAlgos/1e6).toFixed(2)
+        parseFloat((microAlgos/1e6).toString())
         : new BigNumber(microAlgos).dividedBy(1e6).toNumber();
 }
 

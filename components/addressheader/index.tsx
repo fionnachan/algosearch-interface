@@ -18,7 +18,6 @@ const AddressHeader = ({
           <h3>Address Information</h3>
           <div>
             <span>{address}</span>
-            address &&{" "}
             <CopyAddress
               address={address}
               className={styles["address-button"]}

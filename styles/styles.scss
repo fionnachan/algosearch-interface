@@ -213,8 +213,7 @@ code {
 
 .table {
   background-color: #fff;
-  box-shadow: 0 0 35px rgba(127, 150, 174, 0.125);
-  border: 1px solid rgb(231, 234, 243);
+  border: 1px solid var(--grey-lighter);
   border-radius: 8px;
   margin-top: 28px;
   margin-bottom: 50px;

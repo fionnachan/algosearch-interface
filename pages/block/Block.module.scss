@@ -1,8 +1,7 @@
 .block-table {
   border-radius: 8px;
   background-color: #fff;
-  box-shadow: 0 0 35px rgba(127, 150, 174, 0.125);
-  border: 1px solid rgb(231, 234, 243);
+  border: 1px solid var(--grey-lighter);
   margin-bottom: var(--space-xxxl);
 
   table {
@@ -19,8 +18,8 @@
 
   th {
     text-align: left;
-    border-top: 1px solid rgb(231, 234, 243);
-    border-bottom: 1px solid rgb(231, 234, 243);
+    border-top: 1px solid var(--grey-lighter);
+    border-bottom: 1px solid var(--grey-lighter);
     &:first-child {
       padding-left: 15px;
     }

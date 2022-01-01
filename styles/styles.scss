@@ -239,23 +239,17 @@ code {
   margin-block-end: 15px;
 }
 
-@media screen and (min-width: 1300px) {
-  .sizer {
+.sizer {
+  width: 100%;
+  margin: 0 auto;
+  @media screen and (min-width: 1300px) {
     max-width: 1200px;
-    width: 100%;
   }
-}
 
-@media screen and (min-width: 600px) and (max-width: 1300px) {
-  .sizer {
+  @media screen and (min-width: 600px) and (max-width: 1300px) {
     max-width: 90vw;
-    width: 100%;
   }
-}
-
-@media screen and (max-width: 600px) {
-  .sizer {
+  @media screen and (max-width: 600px) {
     max-width: 95vw;
-    width: 100%;
   }
 }

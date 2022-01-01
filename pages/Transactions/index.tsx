@@ -7,7 +7,7 @@ import Breadcrumbs from "../../components/breadcrumbs";
 import AlgoIcon from "../../components/algoicon";
 import { siteName } from "../../utils/constants";
 import Load from "../../components/tableloading";
-import styles from "./Transactions.module.css";
+import styles from "./transactions.module.scss";
 import {
   ellipseAddress,
   integerFormatter,

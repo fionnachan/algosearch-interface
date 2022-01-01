@@ -3,7 +3,7 @@ import moment from "moment";
 import Link from "next/link";
 import React, { useEffect, useState } from "react";
 import TimeAgo from "timeago-react";
-import { TransactionResponse } from "../../pages/tx/[_txid]";
+import { TransactionResponse } from "../../pages/_tx/[_txid]";
 import { siteName } from "../../utils/constants";
 import {
   ellipseAddress,

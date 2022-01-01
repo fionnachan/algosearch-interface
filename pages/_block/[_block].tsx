@@ -18,7 +18,7 @@ import {
   removeSpace,
   TxType,
 } from "../../utils/stringUtils";
-import { TransactionResponse } from "../tx/[_txid]";
+import { TransactionResponse } from "../_tx/[_txid]";
 
 interface IBlockData {
   "block-hash": string;

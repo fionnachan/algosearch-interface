@@ -8,6 +8,7 @@ import Layout from "../components/layout";
 import AlgoIcon from "../components/algoicon";
 import Statscard from "../components/statscard";
 import Load from "../components/tableloading";
+import statscardStyles from "../components/statscard/Statscard.module.scss";
 import styles from "./Home.module.scss";
 import {
   currencyFormatter,
@@ -129,10 +130,7 @@ const Home = () => {
       Header: "Time",
       accessor: "timestamp",
       Cell: ({ value }: { value: number }) => (
-        <TimeAgo
-          datetime={new Date(moment.unix(value).toDate())}
-          locale="en_short"
-        ></TimeAgo>
+        <TimeAgo datetime={new Date(value * 1000)} locale="en_short"></TimeAgo>
       ),
     },
   ];
@@ -140,7 +138,7 @@ const Home = () => {
 
   return (
     <Layout homepage>
-      <div className={styles["home-cards"]}>
+      <div className={statscardStyles["card-container"]}>
         <Statscard
           stat="Latest Round"
           value={
@@ -179,6 +177,7 @@ const Home = () => {
         />
         <Statscard
           stat="Algo Price"
+          info="Powered by CoinGecko"
           value={loading ? <Load /> : <>${price}</>}
         />
       </div>

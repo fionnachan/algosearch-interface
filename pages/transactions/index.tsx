@@ -169,7 +169,7 @@ const Transactions = () => {
           <p>{integerFormatter.format(maxTransactions)} transactions found</p>
           <p>(Showing the last {transactions.length} records)</p>
         </div>
-        <div>
+        <div className={styles["loader-wrapper"]}>
           {loading && <Load />}
           {transactions.length > 0 && (
             <Table

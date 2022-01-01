@@ -16,6 +16,9 @@ import {
   microAlgosToAlgos,
 } from "../../utils/stringUtils";
 import Table from "../../components/table";
+import { useDispatch, useSelector } from "react-redux";
+import { getSupply, selectSupply } from "../../features/applicationSlice";
+import { IBlockResponse } from "../../types/apiResponseTypes";
 
 const Blocks = () => {
   const [blocks, setBlocks] = useState([]);
@@ -25,6 +28,8 @@ const Blocks = () => {
   const [currentRound, setCurrentRound] = useState(0);
   const [rewardRate, setRewardRate] = useState<string | number>("");
   const [avgBlockTime, setAvgBlockTime] = useState(0);
+  const supply = useSelector(selectSupply);
+  const dispatch = useDispatch();
 
   // Update page size
   const updatePageSize = (pageIndex: number, pageSize: number) => {
@@ -48,40 +53,39 @@ const Blocks = () => {
     // })
   };
 
+  useEffect(() => {
+    if (supply.current_round > 0) {
+      getBlocks(supply.current_round);
+    }
+  }, [supply, dispatch]);
+
   // Get initial blocks on load
-  const getBlocks = () => {
-    // Call stats to get current round number
+  const getBlocks = (currentRound: number) => {
+    // Use current round number to retrieve last 25 blocks
+    setLoading(false);
     axios({
       method: "get",
-      url: `${siteName}/v1/current-round`,
+      url: `${siteName}/v1/rounds?latest_blk=${currentRound}&limit=25&page=1&order=desc`,
     })
-      .then((resp) => {
-        // Use current round number to retrieve last 25 blocks
-        console.log("current round: ", resp);
-        setCurrentRound(resp.data.round);
-        setRewardRate(microAlgosToAlgos(resp.data.rewards["rewards-rate"]));
+      .then((response) => {
+        console.log("block rounds: ", response.data);
+        setBlocks(response.data.items);
+        const rewardRate =
+          response.data.items
+            .map((item: IBlockResponse) => item.rewards["rewards-rate"])
+            .reduce((prev: number, curr: number) => prev + curr) /
+          response.data.items.length;
+        setRewardRate(microAlgosToAlgos(rewardRate));
+        setPages(response.data.num_of_pages);
         setLoading(false);
-        axios({
-          method: "get",
-          url: `${siteName}/v1/rounds?latest_blk=${resp.data.round}&limit=25&page=1&order=desc`,
-        })
-          .then((response) => {
-            console.log("block rounds: ", response.data);
-            setBlocks(response.data.items);
-            setPages(resp.data.num_of_pages);
-            setLoading(false);
-          })
-          .catch((error) => {
-            console.log("Exception when retrieving last 25 blocks: " + error);
-          });
       })
       .catch((error) => {
-        console.log("Exception when retrieving current round number: " + error);
+        console.log("Exception when retrieving last 25 blocks: " + error);
       });
   };
 
   useEffect(() => {
-    getBlocks();
+    dispatch(getSupply());
     document.title = "AlgoSearch | Blocks";
   }, []);
 
@@ -121,14 +125,14 @@ const Blocks = () => {
         parentLinkName="Home"
         currentLinkName="Blocks"
       />
-      <div className={statscardStyles["cardcontainer"]}>
+      <div className={statscardStyles["card-container"]}>
         <Statscard
           stat="Latest Block"
           value={
             loading ? (
               <Load />
             ) : (
-              <span>{integerFormatter.format(currentRound)}</span>
+              <span>{integerFormatter.format(supply.current_round)}</span>
             )
           }
         />
@@ -138,6 +142,7 @@ const Blocks = () => {
         />
         <Statscard
           stat="Block Reward"
+          info="Average block rewards in last 25 blocks"
           value={
             loading ? (
               <Load />
@@ -151,7 +156,12 @@ const Blocks = () => {
       </div>
       <div className="table">
         <div>
-          <p>{loading ? "Loading" : formatValue(currentRound)} blocks found</p>
+          <p>
+            {loading
+              ? "Loading"
+              : integerFormatter.format(supply.current_round)}{" "}
+            blocks found
+          </p>
           <p>(Showing the last {pageSize} records)</p>
         </div>
         <div>

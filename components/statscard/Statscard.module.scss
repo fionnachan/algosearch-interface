@@ -1,3 +1,13 @@
+.card-container {
+  display: flex;
+  gap: var(--space-m);
+
+  @media screen and (max-width: 768px) {
+    flex-wrap: wrap;
+    gap: var(--space-s);
+  }
+}
+
 .statscard {
   display: inline-block;
   width: 25%;
@@ -13,11 +23,31 @@
     text-transform: uppercase;
     margin: 0;
   }
+}
 
-  span {
-    font-size: 17px;
-    display: inline-block;
-    margin-block-start: -4px;
+.title {
+  display: flex;
+  align-items: center;
+
+  a {
+    display: inline-flex;
+    margin-left: var(--space-xxs);
+  }
+}
+
+.title + span {
+  font-size: 17px;
+  display: inline-block;
+}
+
+.tooltip {
+  padding: var(--space-xs) var(--space-s) !important;
+  background: rgba(223, 240, 255, 0.7) !important;
+  &.place-top,
+  &:after {
+    border-top-color: rgba(223, 240, 255, 0.7) !important;
+    border-top-style: solid !important;
+    border-top-width: 5px !important;
   }
 }
 

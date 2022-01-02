@@ -7,7 +7,7 @@ import Breadcrumbs from "../../components/breadcrumbs";
 import Statscard from "../../components/statscard";
 import AlgoIcon from "../../components/algoicon";
 import Load from "../../components/tableloading";
-import { siteName, formatValue } from "../../utils/constants";
+import { siteName } from "../../utils/constants";
 import styles from "./blocks.module.scss";
 import statscardStyles from "../../components/statscard/Statscard.module.scss";
 import {

@@ -1,7 +1,12 @@
-export function formatValue(number: number) {
-	return number;
+declare global {
+  namespace NodeJS {
+    interface Process {
+      NODE_ENV: 'development' | 'production';
+      env: {
+        NEXT_PUBLIC_API_URL: string;
+      }
+    }
+  }
 }
 
-export const siteName = "http://localhost:3002";
-
-export const algodurl = "http://127.0.0.1:4001";
+export const siteName = process.env.NEXT_PUBLIC_API_URL;

@@ -9,7 +9,7 @@ import ReactTable from "react-table-6";
 import "react-table-6/react-table.css";
 import AlgoIcon from "../../components/algoicon";
 import Load from "../../components/tableloading";
-import { formatValue, siteName } from "../../utils/constants";
+import { siteName } from "../../utils/constants";
 import styles from "./Block.module.scss";
 import {
   getTxTypeName,

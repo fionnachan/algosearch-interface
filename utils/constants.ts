@@ -1,12 +1,12 @@
 declare global {
   namespace NodeJS {
-    interface Process {
-      NODE_ENV: 'development' | 'production';
-      env: {
-        NEXT_PUBLIC_API_URL: string;
-      }
+    interface ProcessEnv {
+      // @ts-ignore
+      NODE_ENV: "development" | "production" | "test";
+      NEXT_PUBLIC_API_URL: string;
     }
   }
 }
 
+// @ts-ignore
 export const siteName = process.env.NEXT_PUBLIC_API_URL;

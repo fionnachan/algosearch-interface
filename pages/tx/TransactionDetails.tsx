@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import Link from "next/link";
 import AlgoIcon from "../../components/algoicon";
 import {
@@ -10,12 +10,27 @@ import { TransactionResponse } from "./[_txid]";
 import "react-table-6/react-table.css";
 import styles from "../block/Block.module.scss";
 import moment from "moment";
+import Tabs from "@mui/material/Tabs";
+import Tab from "@mui/material/Tab";
+import Box from "@mui/material/Box";
+import TabPanel from "../../components/tabPanel";
+
+function a11yProps(index: number) {
+  return {
+    id: `simple-tab-${index}`,
+    "aria-controls": `simple-tabpanel-${index}`,
+  };
+}
 
 const TransactionDetails = ({
   transaction,
 }: {
   transaction: TransactionResponse;
 }) => {
+  const [noteTab, setNoteTab] = useState(0);
+  const clickTabHandler = (event: React.SyntheticEvent, newValue: number) => {
+    setNoteTab(newValue);
+  };
   if (!transaction) {
     return null;
   }
@@ -128,20 +143,24 @@ const TransactionDetails = ({
               <td>
                 {transaction.note && transaction.note !== "" && (
                   <div>
-                    <div>
-                      <span>Base 64:</span>
-                      <textarea
-                        defaultValue={transaction.note}
-                        readOnly
-                      ></textarea>
-                    </div>
-                    <div>
-                      <span>Converted:</span>
-                      <textarea
-                        defaultValue={atob(transaction.note)}
-                        readOnly
-                      ></textarea>
-                    </div>
+                    <Box sx={{ borderBottom: 1, borderColor: "divider" }}>
+                      <Tabs
+                        value={noteTab}
+                        onChange={clickTabHandler}
+                        aria-label="basic tabs example"
+                      >
+                        <Tab label="Base 64" {...a11yProps(0)} />
+                        <Tab label="Hex" {...a11yProps(1)} />
+                      </Tabs>
+                    </Box>
+                    <TabPanel value={noteTab} index={0}>
+                      {transaction.note}
+                    </TabPanel>
+                    <TabPanel value={noteTab} index={1}>
+                      {Buffer.from(transaction.note, "base64")
+                        .toString("hex")
+                        .toUpperCase()}
+                    </TabPanel>
                   </div>
                 )}
               </td>

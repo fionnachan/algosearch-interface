@@ -1,24 +1,15 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
-import moment from "moment";
 import Link from "next/link";
-import TimeAgo from "timeago-react";
-import * as timeago from "timeago.js";
 import Layout from "../components/layout";
 import AlgoIcon from "../components/algoicon";
 import Statscard from "../components/statscard";
 import Load from "../components/tableloading";
 import statscardStyles from "../components/statscard/Statscard.module.scss";
 import styles from "./Home.module.scss";
-import {
-  currencyFormatter,
-  ellipseAddress,
-  integerFormatter,
-  timeAgoLocale,
-} from "../utils/stringUtils";
+import { currencyFormatter, integerFormatter } from "../utils/stringUtils";
 import { BigNumber } from "bignumber.js";
 import Button from "@mui/material/Button";
-import Table from "../components/table";
 import TransactionTable from "../components/table/TransactionTable";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -29,9 +20,11 @@ import {
   selectLatestBlocks,
   selectSupply,
 } from "../features/applicationSlice";
+import BlockTable from "../components/table/BlockTable";
+import { TransactionResponse } from "../types/apiResponseTypes";
 
 const Home = () => {
-  const [transactions, setTransactions] = useState([]);
+  const [transactions, setTransactions] = useState<TransactionResponse[]>();
   const [loading, setLoading] = useState(true);
   const currentRound = useSelector(selectCurrentRound);
   const blocks = useSelector(selectLatestBlocks);
@@ -39,8 +32,6 @@ const Home = () => {
   const [circulatingSupply, setCirculatingSupply] = useState("");
   const supply = useSelector(selectSupply);
   const dispatch = useDispatch();
-
-  timeago.register("en_short", timeAgoLocale);
 
   BigNumber.config({ DECIMAL_PLACES: 2 });
 
@@ -92,49 +83,11 @@ const Home = () => {
     dispatch(getSupply());
     dispatch(getCurrentRound());
     Promise.all([getPrice(), getCirculatingSupply()]).then((results) => {
-      console.log("Promise.all results: ", results);
       setPrice(results[0]);
       setCirculatingSupply(results[1] || "");
       setLoading(false);
     });
   }, [dispatch]);
-
-  const block_columns = [
-    {
-      Header: "Block",
-      accessor: "round",
-      Cell: ({ value }: { value: number }) => {
-        const _value: string = value.toString().replace(" ", "");
-        return (
-          <Link href={`/block/${_value}`}>
-            {integerFormatter.format(Number(_value))}
-          </Link>
-        );
-      },
-    },
-    {
-      Header: "Proposer",
-      accessor: "proposer",
-      Cell: ({ value }: { value: string }) => (
-        <Link href={`/address/${value}`}>{ellipseAddress(value)}</Link>
-      ),
-    },
-    {
-      Header: "# TX",
-      accessor: "transactions",
-      Cell: ({ value }: { value: [] }) => (
-        <span className="nocolor">{value?.length || 0}</span>
-      ),
-    },
-    {
-      Header: "Time",
-      accessor: "timestamp",
-      Cell: ({ value }: { value: number }) => (
-        <TimeAgo datetime={new Date(value * 1000)} locale="en_short"></TimeAgo>
-      ),
-    },
-  ];
-  const block_columns_id = { id: "home-latest-block-sizing" };
 
   return (
     <Layout homepage>
@@ -153,6 +106,7 @@ const Home = () => {
         />
         <Statscard
           stat="Online Stake"
+          info="Total online stake available in the network"
           value={
             loading ? (
               <Load />
@@ -189,12 +143,7 @@ const Home = () => {
               <Link href="/blocks">View more</Link>
             </Button>
           </div>
-          <Table
-            data={blocks}
-            columns={block_columns}
-            loading={loading}
-            getProps={() => block_columns_id}
-          />
+          <BlockTable blocks={blocks} />
         </div>
         <div className={styles["block-table"]}>
           <div>
